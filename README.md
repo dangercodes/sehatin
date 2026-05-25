@@ -128,15 +128,15 @@ Sehatin dibangun dengan pendekatan:
 ---
 
 ## Setup Project
-git clone https://github.com/dangercodes/sehatin.git
+git clone https://github.com/dangercodes/sehatin.git  <br/>
 npm install
 
 ## Run Project
 npm run dev
 
 ## Environment Variables
-cp .env.example .env
-SUPABASE_URL=
+cp .env.example .env<br/>
+SUPABASE_URL=<br/>
 SUPABASE_KEY=
 
 ## Contribution Guidelines
