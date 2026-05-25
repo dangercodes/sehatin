@@ -127,6 +127,27 @@ Sehatin dibangun dengan pendekatan:
 
 ---
 
+## Setup Project
+git clone https://github.com/dangercodes/sehatin.git
+npm install
+
+## Run Project
+npm run dev
+
+## Environment Variables
+cp .env.example .env
+SUPABASE_URL=
+SUPABASE_KEY=
+
+## Contribution Guidelines
+- Fork the repository
+- Create a feature branch
+- Commit your changes
+- Push to the branch
+- Open a pull request
+
+---
+
 ## 📂 Project Structure
 
 ```bash
@@ -147,22 +168,3 @@ sehatin/
 ├── types/
 ├── utils/
 └── supabase/
-
-## Setup Project
-git clone https://github.com/dangercodes/sehatin.git
-npm install
-
-## Run Project
-npm run dev
-
-## Environment Variables
-cp .env.example .env
-SUPABASE_URL=
-SUPABASE_KEY=
-
-## Contribution Guidelines
-- Fork the repository
-- Create a feature branch
-- Commit your changes
-- Push to the branch
-- Open a pull request
