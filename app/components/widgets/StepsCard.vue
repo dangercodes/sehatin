@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import Card from '~/components/ui/Card.vue'
 import Button from '~/components/ui/Button.vue'
+import { useHealthStore } from '~/stores/health'
+import { useGamificationStore } from '~/stores/gamification'
 import { useI18n } from '#imports'
 
+const healthStore = useHealthStore()
+const gamificationStore = useGamificationStore()
 const { locale } = useI18n()
 
-// Steps State
-const steps = ref(8420)
-const addSteps = () => {
-  steps.value += 1000
+const handleAddSteps = () => {
+  healthStore.addSteps(1000)
+  gamificationStore.checkProgress(healthStore)
 }
 </script>
 
@@ -34,17 +36,17 @@ const addSteps = () => {
     </div>
 
     <div class="flex items-end gap-1 mt-auto z-10">
-      <span class="text-3xl font-extrabold text-secondary">{{ steps.toLocaleString() }}</span>
+      <span class="text-3xl font-extrabold text-secondary">{{ healthStore.steps.toLocaleString() }}</span>
       <span class="text-xs text-text-muted font-bold mb-1.5">/ 10,000 steps</span>
     </div>
 
     <!-- Mini sub-stats -->
     <div class="flex gap-3 mt-2 text-[10px] text-text-muted font-extrabold z-10">
-      <span class="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">🔥 340 kcal</span>
-      <span class="bg-slate-50 text-slate-600 px-2 py-0.5 rounded-full">⏱️ 45 mins</span>
+      <span class="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">🔥 {{ healthStore.activeCalories }} kcal</span>
+      <span class="bg-slate-50 text-slate-600 px-2 py-0.5 rounded-full">⏱️ {{ healthStore.activeMinutes }} mins</span>
     </div>
 
-    <Button variant="ghost" size="sm" class="mt-4 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 z-10 font-bold" @click="addSteps">
+    <Button variant="ghost" size="sm" class="mt-4 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 z-10 font-bold" @click="handleAddSteps">
       + 1,000 {{ locale === 'id' ? 'Langkah' : 'Steps' }}
     </Button>
   </Card>

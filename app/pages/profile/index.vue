@@ -2,6 +2,7 @@
 import { onMounted, computed, ref } from 'vue'
 import { useUserStore } from '~/stores/user'
 import { usePlannerStore } from '~/stores/planner'
+import { useHealthStore } from '~/stores/health'
 import { useI18n } from '#imports'
 import { 
   Settings, Moon, ChevronRight, LogOut, Bell, CircleUserRound, 
@@ -13,14 +14,38 @@ import LanguageSwitcher from '~/components/widgets/LanguageSwitcher.vue'
 
 const userStore = useUserStore()
 const plannerStore = usePlannerStore()
+const healthStore = useHealthStore()
 const { t } = useI18n()
 
 onMounted(() => {
   userStore.fetchProfile()
+  healthStore.fetchTodayData()
   plannerStore.initializeStore()
 })
 
+// Modal Toggle States
 const showRemindersModal = ref(false)
+const showEditProfileModal = ref(false)
+const showSettingsModal = ref(false)
+
+// Edit Profile Form States
+const editName = ref('')
+const editAvatarSeed = ref('')
+const editHeight = ref(170)
+const editGoalWeight = ref(65)
+const editGoalCalories = ref(2400)
+const editGoalWater = ref(8)
+const isSavingProfile = ref(false)
+
+// Settings Form States
+const settingsMacros = ref({
+  protein: 150,
+  carbs: 250,
+  fat: 70,
+  sugar: 50,
+  sodium: 2000,
+  fiber: 30
+})
 
 const remindersCopy = ref({
   breakfast: true,
@@ -65,11 +90,62 @@ const handleTestNotification = async () => {
   }
 }
 
+const openEditProfileModal = () => {
+  editName.value = userStore.profileName || userStore.user?.user_metadata?.name || ''
+  editAvatarSeed.value = userStore.profileAvatar ? userStore.profileAvatar.split('seed=').pop() || '' : userStore.user?.id || ''
+  editHeight.value = healthStore.height
+  editGoalWeight.value = healthStore.goalWeight
+  editGoalCalories.value = healthStore.dailyGoalCalories
+  editGoalWater.value = healthStore.dailyGoalWater
+  
+  showEditProfileModal.value = true
+}
+
+const saveProfile = async () => {
+  isSavingProfile.value = true
+  const avatarUrl = `https://api.dicebear.com/7.x/notionists/svg?seed=${editAvatarSeed.value || 'default'}`
+  
+  const res = await userStore.updateProfile({
+    name: editName.value,
+    avatar_url: avatarUrl,
+    height: Number(editHeight.value),
+    goal_weight: Number(editGoalWeight.value),
+    daily_goal_calories: Number(editGoalCalories.value),
+    daily_goal_water: Number(editGoalWater.value)
+  })
+  
+  isSavingProfile.value = false
+  if (res.success) {
+    showEditProfileModal.value = false
+    plannerStore.triggerNotification(t('common.success') || 'Sukses', t('profile.editSuccess'))
+  } else {
+    alert('Failed to update profile: ' + JSON.stringify(res.error))
+  }
+}
+
+const openSettingsModal = () => {
+  settingsMacros.value = {
+    protein: healthStore.macros.protein.goal,
+    carbs: healthStore.macros.carbs.goal,
+    fat: healthStore.macros.fat.goal,
+    sugar: healthStore.macros.sugar.goal,
+    sodium: healthStore.macros.sodium.goal,
+    fiber: healthStore.macros.fiber.goal
+  }
+  showSettingsModal.value = true
+}
+
+const saveSettings = () => {
+  healthStore.updateMacroGoals(settingsMacros.value)
+  showSettingsModal.value = false
+  plannerStore.triggerNotification(t('common.success') || 'Sukses', t('profile.settingsSuccess'))
+}
+
 const menuItems = computed(() => [
-  { name: t('profile.edit'), icon: CircleUserRound, color: 'text-blue-500', bg: 'bg-blue-50' },
+  { name: t('profile.edit'), icon: CircleUserRound, color: 'text-blue-500', bg: 'bg-blue-50', action: openEditProfileModal },
   { name: t('profile.notifications'), icon: Bell, color: 'text-purple-500', bg: 'bg-purple-50', action: openRemindersModal },
   { name: t('profile.darkMode'), icon: Moon, color: 'text-slate-700', bg: 'bg-slate-100', action: () => userStore.toggleTheme() },
-  { name: t('profile.settings'), icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100' },
+  { name: t('profile.settings'), icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100', action: openSettingsModal },
 ])
 </script>
 
@@ -252,6 +328,168 @@ const menuItems = computed(() => [
           <Button @click="saveRemindersConfig" class="font-extrabold py-2.5 flex items-center gap-1.5">
             <Check class="w-4 h-4" />
             {{ t('common.save') }}
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL DIALOG -->
+    <div 
+      v-if="showEditProfileModal" 
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-300"
+    >
+      <div 
+        class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300"
+      >
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div class="flex items-center gap-2">
+            <CircleUserRound class="text-blue-600 w-5 h-5" />
+            <h3 class="font-black text-secondary text-sm uppercase tracking-wider">{{ t('profile.editTitle') }}</h3>
+          </div>
+          <button @click="showEditProfileModal = false" class="text-slate-400 hover:text-secondary hover:bg-slate-200 p-1.5 rounded-full transition-colors">
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+
+        <!-- Modal Scrollable Content -->
+        <div class="p-6 overflow-y-auto space-y-4 flex-1">
+          <p class="text-xs text-text-muted leading-relaxed font-semibold mb-2">{{ t('profile.editDesc') }}</p>
+
+          <div class="space-y-4">
+            <!-- Full Name -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputName') }}</label>
+              <input type="text" v-model="editName" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+            </div>
+
+            <!-- Avatar Seed -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputAvatarSeed') }}</label>
+              <div class="flex gap-3">
+                <input type="text" v-model="editAvatarSeed" class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+                <div class="w-11 h-11 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
+                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${editAvatarSeed || 'default'}`" alt="Preview Avatar" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Height -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputHeight') }}</label>
+                <input type="number" v-model="editHeight" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Goal Weight -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputGoalWeight') }}</label>
+                <input type="number" step="0.1" v-model="editGoalWeight" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Daily Goal Calories -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputGoalCalories') }}</label>
+                <input type="number" v-model="editGoalCalories" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Daily Goal Water -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black text-text-muted uppercase tracking-wider">{{ t('profile.inputGoalWater') }}</label>
+                <input type="number" v-model="editGoalWater" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3.5 bg-slate-50">
+          <Button @click="showEditProfileModal = false" variant="outline" class="border-2 font-black border-slate-200 text-secondary py-2.5">
+            {{ t('common.cancel') }}
+          </Button>
+          <Button @click="saveProfile" :disabled="isSavingProfile" class="font-extrabold py-2.5 flex items-center gap-1.5">
+            <Check class="w-4 h-4" />
+            <span>{{ isSavingProfile ? 'Saving...' : t('common.save') }}</span>
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED SETTINGS MODAL DIALOG -->
+    <div 
+      v-if="showSettingsModal" 
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-300"
+    >
+      <div 
+        class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300"
+      >
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div class="flex items-center gap-2">
+            <Settings class="text-slate-600 w-5 h-5" />
+            <h3 class="font-black text-secondary text-sm uppercase tracking-wider">{{ t('profile.settingsTitle') }}</h3>
+          </div>
+          <button @click="showSettingsModal = false" class="text-slate-400 hover:text-secondary hover:bg-slate-200 p-1.5 rounded-full transition-colors">
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+
+        <!-- Modal Scrollable Content -->
+        <div class="p-6 overflow-y-auto space-y-6 flex-1">
+          <p class="text-xs text-text-muted leading-relaxed font-semibold mb-2">{{ t('profile.settingsDesc') }}</p>
+
+          <div class="space-y-4">
+            <h4 class="text-xs font-black text-secondary uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+              <span>🎯</span>
+              <span>{{ t('profile.settingsLabelMacros') }}</span>
+            </h4>
+
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Protein -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Protein (g)</label>
+                <input type="number" v-model="settingsMacros.protein" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Carbs -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Carbs (g)</label>
+                <input type="number" v-model="settingsMacros.carbs" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Fat -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Fat (g)</label>
+                <input type="number" v-model="settingsMacros.fat" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Sugar -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Sugar (g)</label>
+                <input type="number" v-model="settingsMacros.sugar" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Sodium -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Sodium (mg)</label>
+                <input type="number" v-model="settingsMacros.sodium" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+              <!-- Fiber -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[9px] font-black text-text-muted uppercase tracking-wider">Fiber (g)</label>
+                <input type="number" v-model="settingsMacros.fiber" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-secondary font-black focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3.5 bg-slate-50">
+          <Button @click="showSettingsModal = false" variant="outline" class="border-2 font-black border-slate-200 text-secondary py-2.5">
+            {{ t('common.cancel') }}
+          </Button>
+          <Button @click="saveSettings" class="font-extrabold py-2.5 flex items-center gap-1.5">
+            <Check class="w-4 h-4" />
+            <span>{{ t('common.save') }}</span>
           </Button>
         </div>
       </div>

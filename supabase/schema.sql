@@ -87,3 +87,36 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- 8. Create Community Posts Table
+create table public.community_posts (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  content text not null,
+  steps integer,
+  water integer,
+  weight numeric,
+  liked_by uuid[] default '{}' not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 9. Create Community Group Messages Table
+create table public.community_messages (
+  id uuid default gen_random_uuid() primary key,
+  group_id text not null,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  message text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 10. Enable RLS for Community Tables
+alter table public.community_posts enable row level security;
+alter table public.community_messages enable row level security;
+
+-- 11. Create Security Policies for Community Tables
+create policy "Users can view all community posts" on public.community_posts for select using (true);
+create policy "Users can insert own community posts" on public.community_posts for insert with check (auth.role() = 'authenticated');
+create policy "Users can update any community posts" on public.community_posts for update using (true);
+
+create policy "Users can view all group messages" on public.community_messages for select using (true);
+create policy "Users can insert own group messages" on public.community_messages for insert with check (auth.role() = 'authenticated');

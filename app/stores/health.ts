@@ -91,7 +91,11 @@ export const useHealthStore = defineStore('health', {
     weightHistory: [] as Array<{
       weight: number
       date: string
-    }>
+    }>,
+    // Steps & Activity (stored in localStorage, resets daily)
+    steps: 0,
+    activeCalories: 0,
+    activeMinutes: 0
   }),
   getters: {
     calorieProgress: (state) => {
@@ -304,6 +308,62 @@ export const useHealthStore = defineStore('health', {
           }
         })
       }
+
+      // 5. Fetch steps & activity from localStorage (resets daily)
+      if (typeof window !== 'undefined') {
+        const todayStr = new Date().toDateString()
+        const saved = localStorage.getItem('sehatin_steps_activity')
+        if (saved) {
+          try {
+            const data = JSON.parse(saved)
+            if (data.date === todayStr) {
+              this.steps = data.steps || 0
+              this.activeCalories = data.calories || 0
+              this.activeMinutes = data.minutes || 0
+            } else {
+              // New day! Reset to 0
+              this.steps = 0
+              this.activeCalories = 0
+              this.activeMinutes = 0
+              localStorage.setItem('sehatin_steps_activity', JSON.stringify({
+                date: todayStr,
+                steps: 0,
+                calories: 0,
+                minutes: 0
+              }))
+            }
+          } catch (e) {
+            console.error('Failed to parse steps activity data', e)
+          }
+        } else {
+          // No saved data, initialize for today
+          this.steps = 0
+          this.activeCalories = 0
+          this.activeMinutes = 0
+          localStorage.setItem('sehatin_steps_activity', JSON.stringify({
+            date: todayStr,
+            steps: 0,
+            calories: 0,
+            minutes: 0
+          }))
+        }
+
+        // Fetch custom macro goals from localStorage
+        const savedMacros = localStorage.getItem('sehatin_macro_goals')
+        if (savedMacros) {
+          try {
+            const data = JSON.parse(savedMacros)
+            if (data.protein !== undefined) this.macros.protein.goal = data.protein
+            if (data.carbs !== undefined) this.macros.carbs.goal = data.carbs
+            if (data.fat !== undefined) this.macros.fat.goal = data.fat
+            if (data.sugar !== undefined) this.macros.sugar.goal = data.sugar
+            if (data.sodium !== undefined) this.macros.sodium.goal = data.sodium
+            if (data.fiber !== undefined) this.macros.fiber.goal = data.fiber
+          } catch (e) {
+            console.error('Failed to parse custom macro goals', e)
+          }
+        }
+      }
     },
 
     async addWater() {
@@ -412,6 +472,49 @@ export const useHealthStore = defineStore('health', {
 
       if (!error) {
         await this.fetchTodayData()
+      }
+    },
+
+    addSteps(amount: number) {
+      this.steps += amount
+      this.activeCalories = Math.round(this.steps * 0.04)
+      this.activeMinutes = Math.round(this.steps * 0.0053)
+
+      if (typeof window !== 'undefined') {
+        const todayStr = new Date().toDateString()
+        localStorage.setItem('sehatin_steps_activity', JSON.stringify({
+          date: todayStr,
+          steps: this.steps,
+          calories: this.activeCalories,
+          minutes: this.activeMinutes
+        }))
+      }
+    },
+
+    updateMacroGoals(goals: {
+      protein?: number
+      carbs?: number
+      fat?: number
+      sugar?: number
+      sodium?: number
+      fiber?: number
+    }) {
+      if (goals.protein !== undefined) this.macros.protein.goal = Number(goals.protein)
+      if (goals.carbs !== undefined) this.macros.carbs.goal = Number(goals.carbs)
+      if (goals.fat !== undefined) this.macros.fat.goal = Number(goals.fat)
+      if (goals.sugar !== undefined) this.macros.sugar.goal = Number(goals.sugar)
+      if (goals.sodium !== undefined) this.macros.sodium.goal = Number(goals.sodium)
+      if (goals.fiber !== undefined) this.macros.fiber.goal = Number(goals.fiber)
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('sehatin_macro_goals', JSON.stringify({
+          protein: this.macros.protein.goal,
+          carbs: this.macros.carbs.goal,
+          fat: this.macros.fat.goal,
+          sugar: this.macros.sugar.goal,
+          sodium: this.macros.sodium.goal,
+          fiber: this.macros.fiber.goal
+        }))
       }
     }
   }

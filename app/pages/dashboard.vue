@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed, ref } from 'vue'
-import { AlertCircle } from '@lucide/vue'
+import { AlertCircle, BrainCircuit, ArrowRight, FileText } from '@lucide/vue'
 import FoodScannerModal from '~/components/widgets/FoodScannerModal.vue'
+import ExportReportModal from '~/components/widgets/ExportReportModal.vue'
+import Card from '~/components/ui/Card.vue'
 import { useHealthStore } from '~/stores/health'
 import { useUserStore } from '~/stores/user'
 import { usePlannerStore } from '~/stores/planner'
@@ -111,6 +113,13 @@ const openAiModal = () => {
   showAiModal.value = true
 }
 
+// Export Report Modal State
+const showReportModal = ref(false)
+
+const openReportModal = () => {
+  showReportModal.value = true
+}
+
 const handleScannerLogged = async () => {
   await healthStore.fetchTodayData()
   gamificationStore.checkProgress(healthStore)
@@ -211,8 +220,17 @@ const showWeightReminder = computed(() => {
             {{ t('dashboard.greeting', { name: userStore.name.split(' ')[0] }) }}
           </h1>
         </div>
-        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-soft shrink-0">
-          <img :src="userStore.avatar" alt="Avatar" class="w-full h-full object-cover bg-slate-100" />
+        <div class="flex items-center gap-3">
+          <button
+            @click="openReportModal"
+            class="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100 transition-all text-[11px] font-black active:scale-95 select-none"
+          >
+            <FileText class="w-4 h-4" />
+            <span class="hidden sm:inline">{{ t('report.btnExport') }}</span>
+          </button>
+          <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-soft shrink-0">
+            <img :src="userStore.avatar" alt="Avatar" class="w-full h-full object-cover bg-slate-100" />
+          </div>
         </div>
       </header>
 
@@ -272,6 +290,7 @@ const showWeightReminder = computed(() => {
 
         <!-- Right Column: Habits and Progression Tracking -->
         <div class="md:col-span-6 lg:col-span-6 flex flex-col gap-6">
+          <WidgetsAINutritionCoach />
           <WidgetsGamificationCard />
           <div class="flex gap-4">
             <WidgetsFoodScannerCard @scan-click="openAiModal" class="flex-1" />
@@ -286,6 +305,12 @@ const showWeightReminder = computed(() => {
       :is-open="showAiModal" 
       @close="showAiModal = false" 
       @logged="handleScannerLogged"
+    />
+
+    <!-- EXPORT REPORT MODAL -->
+    <ExportReportModal 
+      :is-open="showReportModal" 
+      @close="showReportModal = false" 
     />
   </div>
 </template>

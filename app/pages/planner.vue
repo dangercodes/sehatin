@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { 
   Sparkles, Scale, Flame, Droplets, ArrowRight, CheckCircle2, 
   HelpCircle, AlertCircle, ShoppingBag, DollarSign, Calendar, ChevronRight,
-  TrendingDown, RotateCcw, AlertTriangle, ShieldCheck
+  TrendingDown, RotateCcw, AlertTriangle, ShieldCheck, BrainCircuit
 } from '@lucide/vue'
 import { useHealthStore } from '~/stores/health'
 import { useUserStore } from '~/stores/user'
@@ -288,6 +288,35 @@ const smartGroceryList = computed(() => {
     <!-- TAB 1: RECOMMENDATIONS & SWAPS -->
     <div v-if="activeTab === 'recommendations'" class="space-y-8 animate-in fade-in duration-300">
       
+      <!-- AI Nutrition Coach promo card -->
+      <Card padding="p-5" class="bg-gradient-to-br from-violet-600 to-indigo-700 text-white border-none relative overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 group">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none group-hover:scale-110 transition-transform"></div>
+        <div class="absolute bottom-0 left-0 w-36 h-36 bg-primary/20 rounded-full blur-xl -ml-16 -mb-16 pointer-events-none"></div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white shrink-0 group-hover:rotate-6 transition-transform">
+              <BrainCircuit class="w-6 h-6 text-primary animate-pulse" />
+            </div>
+            <div class="min-w-0">
+              <span class="text-[9px] font-black uppercase bg-primary/25 border border-primary/30 text-primary-300 px-2.5 py-0.5 rounded-full tracking-wider inline-block">
+                {{ t('coach.dashboardTag') }}
+              </span>
+              <h3 class="font-extrabold text-white text-base mt-2 leading-snug">
+                {{ t('coach.dashboardTitle') }}
+              </h3>
+              <p class="text-xs text-white/80 mt-1 leading-relaxed font-semibold max-w-xl">
+                {{ t('coach.dashboardDesc') }}
+              </p>
+            </div>
+          </div>
+          <NuxtLink to="/coach" class="sm:self-center inline-flex items-center justify-center gap-1.5 text-xs font-black bg-white text-indigo-700 hover:bg-slate-50 transition-all rounded-full px-5 py-3 shadow-md active:scale-95 shrink-0 self-start">
+            <span>{{ t('coach.dashboardBtn') }}</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </NuxtLink>
+        </div>
+      </Card>
+
       <!-- Calorie needs analysis -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card padding="p-5" class="bg-gradient-to-br from-white to-primary-50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">

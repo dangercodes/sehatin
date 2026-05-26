@@ -75,3 +75,93 @@
   scrollbar-color: #cbd5e1 transparent;
 }
 
+/* ==========================================
+   PREMIUM DYNAMIC DARK MODE GLOBAL STYLES
+   ========================================== */
+.dark body {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+}
+
+/* Base structural layout backgrounds override */
+.dark #__nuxt,
+.dark .bg-background,
+.dark .bg-slate-50,
+.dark .md\:bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: #0f172a !important;
+}
+
+/* Cards & Layout containers override */
+.dark .bg-white,
+.dark .md\:bg-white,
+.dark .bg-card,
+.dark .glass {
+  background-color: #1e293b !important;
+}
+
+/* High emphasis title & secondary typography override */
+.dark .text-secondary,
+.dark .text-slate-900,
+.dark .text-text-main,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark .font-bold {
+  color: #f8fafc !important;
+}
+
+/* Low emphasis & subtext typography override */
+.dark .text-text-muted,
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+/* Sidebar and active menu elements styling overrides */
+.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+/* Soft shadows and borders adjustment */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .md\:border-slate-100 {
+  border-color: #334155 !important;
+}
+
+.dark .shadow-soft,
+.dark .shadow-glass {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Interactive list hovers override */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Premium micro-overrides for modals and menus */
+.dark .bg-slate-50 {
+  background-color: #1e293b !important;
+}
+
+/* Inputs, Textareas, Options, and Dropdown Controls */
+.dark input, 
+.dark select, 
+.dark textarea,
+.dark option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #22c55e !important; /* primary green focus indicator */
+}
+

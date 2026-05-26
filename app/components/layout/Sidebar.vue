@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Home, Apple, Activity, User, Plus, LogOut, Sparkles } from '@lucide/vue'
+import { Home, Apple, Activity, User, Plus, LogOut, Sparkles, Users, BrainCircuit } from '@lucide/vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useUserStore } from '~/stores/user'
@@ -14,7 +14,9 @@ const navItems = computed(() => [
   { name: t('nav.dashboard'), icon: Home, path: '/dashboard' },
   { name: t('nav.food'), icon: Apple, path: '/food' },
   { name: t('nav.planner'), icon: Sparkles, path: '/planner' },
+  { name: t('nav.coach'), icon: BrainCircuit, path: '/coach' },
   { name: t('nav.weight'), icon: Activity, path: '/weight' },
+  { name: t('nav.community'), icon: Users, path: '/community' },
   { name: t('nav.profile'), icon: User, path: '/profile' }
 ])
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Home, Apple, Activity, User, Sparkles } from '@lucide/vue'
+import { Home, Apple, Activity, User, Sparkles, Users } from '@lucide/vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useI18n } from '#imports'
@@ -12,6 +12,7 @@ const navItems = computed(() => [
   { name: t('nav.food'), icon: Apple, path: '/food' },
   { name: t('nav.planner'), icon: Sparkles, path: '/planner' },
   { name: t('nav.weight'), icon: Activity, path: '/weight' },
+  { name: t('nav.community'), icon: Users, path: '/community' },
   { name: t('nav.profile'), icon: User, path: '/profile' }
 ])
 </script>
