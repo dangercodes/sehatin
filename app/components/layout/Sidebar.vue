@@ -24,9 +24,7 @@ const navItems = computed(() => [
 <template>
   <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-100 h-screen sticky top-0 px-6 py-8 overflow-y-auto">
     <div class="flex items-center gap-3 mb-12">
-      <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-        <span class="text-white text-xl font-bold">S</span>
-      </div>
+      <img src="~/assets/images/logo-sehatin.png" alt="Sehatin Logo" class="w-10 h-10 object-contain" />
       <span class="text-2xl font-bold text-secondary tracking-tight">Sehatin</span>
     </div>
 

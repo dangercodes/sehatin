@@ -281,20 +281,20 @@ const showWeightReminder = computed(() => {
 
           <WidgetsCalorieProgressCard />
           <WidgetsMacrosCard />
-          <div class="flex gap-4">
+          <div class="flex gap-4 flex-col md:flex-row">
             <WidgetsStepsCard class="flex-1" />
-            <WidgetsWaterCard class="w-36" />
+            <WidgetsWaterCard class="w-full md:w-36" />
           </div>
           <WidgetsMicronutrientsCard />
         </div>
 
         <!-- Right Column: Habits and Progression Tracking -->
-        <div class="md:col-span-6 lg:col-span-6 flex flex-col gap-6">
+        <div class="md:col-span-6 lg:col-span-6 flex flex-col gap-6 mt-6 md:mt-0">
           <WidgetsAINutritionCoach />
           <WidgetsGamificationCard />
-          <div class="flex gap-4">
+          <div class="flex gap-4 flex-col md:flex-row">
             <WidgetsFoodScannerCard @scan-click="openAiModal" class="flex-1" />
-            <WidgetsWeightCard class="w-[195px]" />
+            <WidgetsWeightCard class="w-full md:w-[195px]" />
           </div>
         </div>
       </div>

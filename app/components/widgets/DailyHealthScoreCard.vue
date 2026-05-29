@@ -53,9 +53,9 @@ const scoreLevel = computed(() => {
   <div 
     class="mb-8 p-6 rounded-3xl transition-all duration-500 shadow-soft relative overflow-hidden group border"
     :class="{
-      'bg-gradient-to-br from-emerald-50 to-teal-50/50 border-emerald-100/80': scoreLevel === 'Excellent',
-      'bg-gradient-to-br from-amber-50 to-orange-50/50 border-amber-100/80': scoreLevel === 'Good',
-      'bg-gradient-to-br from-rose-50 to-orange-50/50 border-rose-100/80': scoreLevel === 'Warning'
+      'bg-gradient-to-br from-emerald-50 to-teal-50/50 border-emerald-100/80 dark:from-emerald-900/30 dark:to-teal-900/20 dark:border-emerald-800/50': scoreLevel === 'Excellent',
+      'bg-gradient-to-br from-amber-50 to-orange-50/50 border-amber-100/80 dark:from-amber-900/30 dark:to-orange-900/20 dark:border-amber-800/50': scoreLevel === 'Good',
+      'bg-gradient-to-br from-rose-50 to-orange-50/50 border-rose-100/80 dark:from-rose-900/30 dark:to-orange-900/20 dark:border-rose-800/50': scoreLevel === 'Warning'
     }"
   >
     <!-- Background Vectors for aesthetic premium feel -->
@@ -98,18 +98,18 @@ const scoreLevel = computed(() => {
           </div>
           <h2 class="text-2xl font-black mt-1"
             :class="{
-              'text-emerald-900': scoreLevel === 'Excellent',
-              'text-amber-900': scoreLevel === 'Good',
-              'text-rose-900': scoreLevel === 'Warning'
+              'text-emerald-900 dark:text-emerald-300': scoreLevel === 'Excellent',
+              'text-amber-900 dark:text-amber-300': scoreLevel === 'Good',
+              'text-rose-900 dark:text-rose-300': scoreLevel === 'Warning'
             }"
           >
             {{ t(`dashboard.healthScore.${scoreLevel.toLowerCase()}`) }}
           </h2>
           <p class="text-sm mt-1 font-semibold leading-relaxed"
             :class="{
-              'text-emerald-700': scoreLevel === 'Excellent',
-              'text-amber-700': scoreLevel === 'Good',
-              'text-rose-700': scoreLevel === 'Warning'
+              'text-emerald-700 dark:text-emerald-400': scoreLevel === 'Excellent',
+              'text-amber-700 dark:text-amber-400': scoreLevel === 'Good',
+              'text-rose-700 dark:text-rose-400': scoreLevel === 'Warning'
             }"
           >
             {{ t(`dashboard.healthScore.desc${scoreLevel}`) }}
@@ -120,9 +120,9 @@ const scoreLevel = computed(() => {
       <!-- Right Section: Horizontal/Grid checklist of 4 criteria -->
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center gap-3 shrink-0">
         <!-- Metric 1: Calories -->
-        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-100/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
+        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-100/50 dark:border-slate-700/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
           <div class="w-8 h-8 rounded-full flex items-center justify-center mb-1.5"
-            :class="isCalorieOnTarget ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'"
+            :class="isCalorieOnTarget ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500'"
           >
             <Flame class="w-4.5 h-4.5" />
           </div>
@@ -142,9 +142,9 @@ const scoreLevel = computed(() => {
         </div>
 
         <!-- Metric 2: Sugar -->
-        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-100/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
+        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-100/50 dark:border-slate-700/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
           <div class="w-8 h-8 rounded-full flex items-center justify-center mb-1.5"
-            :class="isSugarWithinLimit ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"
+            :class="isSugarWithinLimit ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400'"
           >
             <Sparkles class="w-4.5 h-4.5" />
           </div>
@@ -164,9 +164,9 @@ const scoreLevel = computed(() => {
         </div>
 
         <!-- Metric 3: Protein -->
-        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-100/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
+        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-100/50 dark:border-slate-700/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
           <div class="w-8 h-8 rounded-full flex items-center justify-center mb-1.5"
-            :class="isProteinSufficient ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'"
+            :class="isProteinSufficient ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500'"
           >
             <Scale class="w-4.5 h-4.5" />
           </div>
@@ -186,9 +186,9 @@ const scoreLevel = computed(() => {
         </div>
 
         <!-- Metric 4: Water -->
-        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-100/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
+        <div class="flex flex-col items-center p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-100/50 dark:border-slate-700/50 shadow-xs min-w-[110px] text-center transition-all duration-300 hover:translate-y-[-2px]">
           <div class="w-8 h-8 rounded-full flex items-center justify-center mb-1.5"
-            :class="isWaterSufficient ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'"
+            :class="isWaterSufficient ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500'"
           >
             <Droplets class="w-4.5 h-4.5" />
           </div>

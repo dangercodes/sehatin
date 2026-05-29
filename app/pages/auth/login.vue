@@ -65,9 +65,7 @@ const handleLogin = async () => {
 <template>
   <div class="px-6 py-12 min-h-screen flex flex-col bg-white">
     <div class="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-      <div class="w-16 h-16 bg-primary rounded-3xl flex items-center justify-center mb-8 shadow-lg shadow-primary/30">
-        <span class="text-white text-3xl font-bold">S</span>
-      </div>
+      <img src="~/assets/images/logo-sehatin-with-text.png" alt="Sehatin Logo" class="w-40 object-contain mb-8 mx-auto" />
       
       <h1 class="text-3xl font-bold text-secondary mb-2">
         {{ t('auth.login.title') }}
@@ -113,14 +111,18 @@ const handleLogin = async () => {
         </span>
       </div>
 
-      <div class="flex gap-4">
+      <!-- <div class="flex gap-4 mb-4">
         <Button variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
           Google
         </Button>
         <Button variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
           Apple
         </Button>
-      </div>
+      </div> -->
+
+      <Button to="/dashboard" variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
+        {{ t('auth.login.guestBtn') }}
+      </Button>
     </div>
 
     <p class="text-center text-sm text-text-muted mt-8">

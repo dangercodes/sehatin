@@ -314,7 +314,7 @@ const formatMarkdown = (text: string) => {
     </div>
 
     <!-- Bottom Message Input Console Container -->
-    <div class="fixed bottom-0 inset-x-0 bg-gradient-to-t from-slate-50 via-slate-50/95 to-transparent px-5 py-4 pb-8 shrink-0 md:relative md:bg-white md:border-t md:border-slate-100 md:pb-6 z-10">
+    <div class="fixed bottom-0 inset-x-0 bg-gradient-to-t from-slate-50 dark:from-slate-900 via-slate-50/95 dark:via-slate-900/95 to-transparent px-5 py-4 pb-8 shrink-0 md:relative md:bg-white md:border-t md:border-slate-100 md:pb-6 z-10">
       <div class="max-w-3xl mx-auto flex items-center gap-2">
         <input 
           v-model="inputText"

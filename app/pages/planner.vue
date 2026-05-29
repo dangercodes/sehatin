@@ -289,14 +289,14 @@ const smartGroceryList = computed(() => {
     <div v-if="activeTab === 'recommendations'" class="space-y-8 animate-in fade-in duration-300">
       
       <!-- AI Nutrition Coach promo card -->
-      <Card padding="p-5" class="bg-gradient-to-br from-violet-600 to-indigo-700 text-white border-none relative overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 group">
+      <Card padding="p-5" class="bg-gradient-to-br from-violet-600 to-indigo-700 dark:from-violet-900/50 dark:to-indigo-950 text-white border-none relative overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 group">
         <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none group-hover:scale-110 transition-transform"></div>
         <div class="absolute bottom-0 left-0 w-36 h-36 bg-primary/20 rounded-full blur-xl -ml-16 -mb-16 pointer-events-none"></div>
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white shrink-0 group-hover:rotate-6 transition-transform">
-              <BrainCircuit class="w-6 h-6 text-primary animate-pulse" />
+              <BrainCircuit class="w-6 h-6 text-white animate-pulse" />
             </div>
             <div class="min-w-0">
               <span class="text-[9px] font-black uppercase bg-primary/25 border border-primary/30 text-primary-300 px-2.5 py-0.5 rounded-full tracking-wider inline-block">
@@ -319,7 +319,7 @@ const smartGroceryList = computed(() => {
 
       <!-- Calorie needs analysis -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card padding="p-5" class="bg-gradient-to-br from-white to-primary-50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+        <Card padding="p-5" class="bg-gradient-to-br from-white to-primary-50 dark:from-slate-800/50 dark:to-slate-900/50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none -mr-6 -mt-6"></div>
           <span class="text-[10px] font-black uppercase text-primary tracking-wider">{{ t('planner.bmr') }}</span>
           <div>
@@ -328,7 +328,7 @@ const smartGroceryList = computed(() => {
           </div>
         </Card>
 
-        <Card padding="p-5" class="bg-gradient-to-br from-white to-orange-50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+        <Card padding="p-5" class="bg-gradient-to-br from-white to-orange-50 dark:from-slate-800/50 dark:to-slate-900/50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div class="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-xl pointer-events-none -mr-6 -mt-6"></div>
           <span class="text-[10px] font-black uppercase text-orange-500 tracking-wider">{{ t('planner.tdee') }}</span>
           <div>
@@ -337,7 +337,7 @@ const smartGroceryList = computed(() => {
           </div>
         </Card>
 
-        <Card padding="p-5" class="bg-gradient-to-br from-white to-emerald-50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+        <Card padding="p-5" class="bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800/50 dark:to-slate-900/50 border-none relative overflow-hidden flex flex-col justify-between min-h-[140px]">
           <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none -mr-6 -mt-6"></div>
           <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider">Target Calorie Intake</span>
           <div>
@@ -383,7 +383,7 @@ const smartGroceryList = computed(() => {
           <div class="p-4 rounded-2xl bg-slate-50 flex flex-col items-center justify-center text-center relative overflow-hidden group">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">{{ t('planner.caloriesDiff') }}</span>
             <span class="text-xl font-black mt-1 text-emerald-600">-{{ diffCalories }} kcal</span>
-            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
+            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
               {{ t('planner.saveCal') }} {{ Math.round((diffCalories / activeUnhealthy.calories) * 100) }}%
             </span>
           </div>
@@ -395,7 +395,7 @@ const smartGroceryList = computed(() => {
               {{ diffProtein >= 0 ? `+${diffProtein}` : diffProtein }}g
             </span>
             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide"
-              :class="diffProtein >= 0 ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50'"
+              :class="diffProtein >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/50' : 'text-rose-600 bg-rose-50 dark:bg-rose-900/50'"
             >
               {{ diffProtein >= 0 ? t('planner.gainProt') : 'Less' }}
             </span>
@@ -405,7 +405,7 @@ const smartGroceryList = computed(() => {
           <div class="p-4 rounded-2xl bg-slate-50 flex flex-col items-center justify-center text-center relative overflow-hidden group">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">{{ t('planner.sugarDiff') }}</span>
             <span class="text-xl font-black mt-1 text-emerald-600">-{{ diffSugar.toFixed(1) }}g</span>
-            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
+            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
               {{ t('planner.lessSug') }} {{ Math.round((diffSugar / activeUnhealthy.sugar) * 100) }}%
             </span>
           </div>
@@ -414,7 +414,7 @@ const smartGroceryList = computed(() => {
           <div class="p-4 rounded-2xl bg-slate-50 flex flex-col items-center justify-center text-center relative overflow-hidden group">
             <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">{{ t('planner.fatDiff') }}</span>
             <span class="text-xl font-black mt-1 text-emerald-600">-{{ diffFat.toFixed(1) }}g</span>
-            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
+            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full mt-1.5 uppercase tracking-wide">
               {{ t('planner.lessFat') }} {{ Math.round((diffFat / activeUnhealthy.fat) * 100) }}%
             </span>
           </div>
@@ -606,7 +606,7 @@ const smartGroceryList = computed(() => {
               <span class="text-[10px] font-black bg-orange-500/10 text-orange-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 {{ planFocus }}
               </span>
-              <span class="text-[10px] font-black bg-slate-200 text-secondary px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              <span class="text-[10px] font-black bg-slate-200 dark:bg-slate-700 text-secondary px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 {{ planBudget }}
               </span>
             </div>
@@ -631,28 +631,28 @@ const smartGroceryList = computed(() => {
             
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <!-- Breakfast -->
-              <div class="p-3 bg-slate-50/50 rounded-2xl border border-slate-100/40">
+              <div class="p-3 bg-slate-50/50 dark:bg-slate-700 rounded-2xl border border-slate-100/40">
                 <span class="text-[9px] font-black text-primary uppercase tracking-wide">🍳 Breakfast</span>
                 <p class="text-xs font-black text-secondary mt-1.5">{{ dayPlan.breakfast.name }}</p>
                 <span class="text-[9px] font-extrabold text-text-muted uppercase block mt-1.5">🔥 {{ dayPlan.breakfast.calories }} kcal | 💪 {{ dayPlan.breakfast.protein }}g P</span>
               </div>
 
               <!-- Lunch -->
-              <div class="p-3 bg-slate-50/50 rounded-2xl border border-slate-100/40">
+              <div class="p-3 bg-slate-50/50 dark:bg-slate-700 rounded-2xl border border-slate-100/40">
                 <span class="text-[9px] font-black text-blue-600 uppercase tracking-wide">🍱 Lunch</span>
                 <p class="text-xs font-black text-secondary mt-1.5">{{ dayPlan.lunch.name }}</p>
                 <span class="text-[9px] font-extrabold text-text-muted uppercase block mt-1.5">🔥 {{ dayPlan.lunch.calories }} kcal | 💪 {{ dayPlan.lunch.protein }}g P</span>
               </div>
 
               <!-- Dinner -->
-              <div class="p-3 bg-slate-50/50 rounded-2xl border border-slate-100/40">
+              <div class="p-3 bg-slate-50/50 dark:bg-slate-700 rounded-2xl border border-slate-100/40">
                 <span class="text-[9px] font-black text-indigo-600 uppercase tracking-wide">🍲 Dinner</span>
                 <p class="text-xs font-black text-secondary mt-1.5">{{ dayPlan.dinner.name }}</p>
                 <span class="text-[9px] font-extrabold text-text-muted uppercase block mt-1.5">🔥 {{ dayPlan.dinner.calories }} kcal | 💪 {{ dayPlan.dinner.protein }}g P</span>
               </div>
 
               <!-- Snack -->
-              <div class="p-3 bg-slate-50/50 rounded-2xl border border-slate-100/40">
+              <div class="p-3 bg-slate-50/50 dark:bg-slate-700 rounded-2xl border border-slate-100/40">
                 <span class="text-[9px] font-black text-amber-600 uppercase tracking-wide">🥜 Snack</span>
                 <p class="text-xs font-black text-secondary mt-1.5">{{ dayPlan.snack.name }}</p>
                 <span class="text-[9px] font-extrabold text-text-muted uppercase block mt-1.5">🔥 {{ dayPlan.snack.calories }} kcal | 💪 {{ dayPlan.snack.protein }}g P</span>
@@ -662,7 +662,7 @@ const smartGroceryList = computed(() => {
         </div>
 
         <!-- Dynamic Smart Grocery Shopping List Card -->
-        <Card padding="p-6" class="bg-gradient-to-br from-white to-primary-50/20 border border-primary-100 shadow-soft">
+        <Card padding="p-6" class="bg-gradient-to-br from-white to-primary-50/20 dark:from-slate-900 dark:to-slate-800/50 border border-primary-100 dark:border-primary-700 shadow-soft">
           <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-primary-100/50 pb-4">
             <div class="flex items-center gap-2">
               <ShoppingBag class="text-primary w-5.5 h-5.5" />

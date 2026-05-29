@@ -32,6 +32,7 @@
       "subtitle": "Pantau kalori harian, konsumsi air minum, dan raih berat badan idealmu dengan antarmuka Sehatin yang cantik dan sederhana.",
       "ctaStart": "Mulai Perjalananmu",
       "ctaLearn": "Pelajari Selengkapnya",
+      "ctaGuest": "Coba Guest Mode",
       "mockupGreeting": "Ringkasan Harian",
       "mockupTarget": "Target",
       "mockupRemaining": "tersisa"
@@ -150,6 +151,9 @@
     "errSave": "Terjadi kesalahan saat menyimpan data"
   },
   "auth": {
+    "guestExpiredTitle": "Waktu Habis! ⏱️",
+    "guestExpiredDesc": "Uji coba Guest 7 hari Anda telah berakhir. Daftar sekarang secara gratis untuk menyimpan data kesehatan Anda dan membuka semua fitur komunitas.",
+    "btnRegisterNow": "Daftar Gratis Sekarang",
     "login": {
       "title": "Selamat datang kembali!",
       "subtitle": "Masuk untuk melanjutkan perjalanan hidup sehatmu.",
@@ -161,7 +165,8 @@
       "dontHaveAccount": "Belum punya akun?",
       "signUpLink": "Daftar",
       "errEmailPass": "Email dan password wajib diisi",
-      "errLogin": "Terjadi kesalahan saat masuk"
+      "errLogin": "Terjadi kesalahan saat masuk",
+      "guestBtn": "Lanjutkan sebagai Guest"
     },
     "register": {
       "title": "Yuk, gabung Sehatin!",
@@ -359,6 +364,16 @@
     "weightBody": "Sudah saatnya mencatat berat badan hari ini untuk melacak progres jangka panjangmu!"
   },
   "community": {
+    "guestTitle": "Gabung Komunitas Kami",
+    "guestDesc": "Bergabunglah dengan ribuan pejuang hidup sehat lainnya. Bagikan progres diet Anda, temukan teman seperjuangan, dan jelajahi ratusan resep sehat premium.",
+    "btnRegister": "Daftar Akun Gratis",
+    "btnLogin": "Sudah Punya Akun?",
+    "guestFeat1Title": "Bagikan Progres",
+    "guestFeat1Desc": "Bagikan target langkah dan dietmu.",
+    "guestFeat2Title": "Resep Sehat",
+    "guestFeat2Desc": "Akses koleksi resep diet premium.",
+    "guestFeat3Title": "Grup Diskusi",
+    "guestFeat3Desc": "Ngobrol bersama pejuang diet lainnya.",
     "title": "Komunitas & Berbagi",
     "subtitle": "Bagikan progres harianmu, cari resep nutrisi seimbang, & berdiskusi bersama pejuang hidup sehat lainnya.",
     "tabTimeline": "Berbagi Progres",

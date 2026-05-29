@@ -26,7 +26,20 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/auth/login',
       callback: '/confirm',
-      exclude: ['/', '/auth/register', '/onboarding'],
+      exclude: [
+        '/', 
+        '/auth/*', 
+        '/onboarding',
+        '/dashboard',
+        '/coach',
+        '/planner',
+        '/community',
+        '/profile',
+        '/food',
+        '/food/*',
+        '/weight',
+        '/weight/*'
+      ],
     }
   },
 

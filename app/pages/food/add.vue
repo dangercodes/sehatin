@@ -343,7 +343,7 @@ const handleLogManual = async () => {
           @click="selectedCategory = cat as any"
           :class="[
             'py-2 px-1 text-xs font-bold rounded-xl transition-all duration-300',
-            selectedCategory === cat ? 'bg-white text-secondary shadow-sm' : 'text-text-muted hover:text-secondary'
+            selectedCategory === cat ? 'bg-white text-secondary shadow-sm' : 'text-text-muted dark:!text-slate-600 hover:text-secondary'
           ]"
         >
           {{ getCategoryLabel(cat) }}
@@ -381,10 +381,10 @@ const handleLogManual = async () => {
       <div class="mb-6">
         <button 
           @click="openScanModal"
-          class="w-full py-4 border-2 border-dashed border-primary-300 rounded-3xl flex items-center justify-center gap-3 text-primary-600 bg-primary-50/40 hover:bg-primary-50 transition-all hover:scale-[1.01] active:scale-95"
+          class="w-full py-4 border-2 border-dashed border-primary-300 rounded-3xl flex items-center justify-center gap-3 text-primary-600 bg-primary-50/40 hover:bg-primary-50 transition-all hover:scale-[1.01] active:scale-95 dark:bg-slate-800/80 dark:border-slate-700"
         >
-          <Camera class="w-6 h-6 animate-pulse" />
-          <span class="font-bold text-sm">
+          <Camera class="w-6 h-6 animate-pulse dark:text-white" />
+          <span class="font-bold text-sm dark:text-white">
             {{ locale === 'id' ? 'Buka Kamera & Scan Barcode' : 'Open Camera & Scan Barcode' }}
           </span>
         </button>

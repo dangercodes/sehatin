@@ -142,10 +142,10 @@ const saveSettings = () => {
 }
 
 const menuItems = computed(() => [
-  { name: t('profile.edit'), icon: CircleUserRound, color: 'text-blue-500', bg: 'bg-blue-50', action: openEditProfileModal },
-  { name: t('profile.notifications'), icon: Bell, color: 'text-purple-500', bg: 'bg-purple-50', action: openRemindersModal },
-  { name: t('profile.darkMode'), icon: Moon, color: 'text-slate-700', bg: 'bg-slate-100', action: () => userStore.toggleTheme() },
-  { name: t('profile.settings'), icon: Settings, color: 'text-slate-500', bg: 'bg-slate-100', action: openSettingsModal },
+  { name: t('profile.edit'), icon: CircleUserRound, color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/20', action: openEditProfileModal },
+  { name: t('profile.notifications'), icon: Bell, color: 'text-purple-500 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-500/20', action: openRemindersModal },
+  { name: t('profile.darkMode'), icon: Moon, color: 'text-slate-700 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-700', action: () => userStore.toggleTheme() },
+  { name: t('profile.settings'), icon: Settings, color: 'text-slate-500 dark:text-slate-400', bg: 'bg-slate-100 dark:bg-slate-700', action: openSettingsModal },
 ])
 </script>
 
@@ -164,11 +164,11 @@ const menuItems = computed(() => [
         <p class="text-sm text-text-muted">{{ userStore.email }}</p>
       </div>
 
-      <Card padding="p-0" class="overflow-hidden mb-6 bg-white border border-slate-100 shadow-soft">
+      <Card padding="p-0" class="overflow-hidden mb-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-soft">
         <!-- Language Switcher Row inside Card -->
-        <div class="flex items-center justify-between p-4 border-b border-slate-100">
+        <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700">
           <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 shrink-0">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
               <Globe class="w-5 h-5" />
             </div>
             <span class="font-bold text-secondary text-sm">{{ t('common.language') }}</span>
@@ -180,8 +180,8 @@ const menuItems = computed(() => [
           v-for="(item, index) in menuItems" 
           :key="item.name"
           @click="item.action ? item.action() : null"
-          class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition-colors"
-          :class="index !== menuItems.length - 1 ? 'border-b border-slate-100' : ''"
+          class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          :class="index !== menuItems.length - 1 ? 'border-b border-slate-100 dark:border-slate-700' : ''"
         >
           <div class="flex items-center gap-4">
             <div :class="['w-10 h-10 rounded-xl flex items-center justify-center shrink-0', item.bg, item.color]">

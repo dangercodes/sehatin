@@ -31,7 +31,7 @@ const navItems = computed(() => [
         class="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
       ></div>
       <component :is="item.icon" class="w-6 h-6 mb-1" :class="route.path === item.path ? 'stroke-[2.5px]' : 'stroke-2'" />
-      <span class="text-[10px] font-bold">{{ item.name }}</span>
+      <span class="text-[10px] font-bold text-center">{{ item.name }}</span>
     </NuxtLink>
   </div>
 </template>

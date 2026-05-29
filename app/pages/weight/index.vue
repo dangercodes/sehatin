@@ -197,7 +197,7 @@ const chartOptions = computed(() => {
       <div class="md:col-span-4 flex flex-col gap-4 mb-6 md:mb-0">
         
         <!-- Target Progress Card (New!) -->
-        <Card padding="p-5" class="bg-gradient-to-br from-white to-primary-50 border-none relative overflow-hidden">
+        <Card padding="p-5" class="bg-gradient-to-br from-white to-primary-50 dark:from-slate-800 dark:to-primary-900/20 border-none relative overflow-hidden">
           <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none"></div>
           <div class="absolute bottom-0 left-0 w-16 h-16 bg-accent/10 rounded-full blur-xl -ml-6 -mb-6 pointer-events-none"></div>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Mail, Lock, User, ArrowRight, CheckCircle2 } from '@lucide/vue'
+import { Mail, Lock, User, ArrowRight } from '@lucide/vue'
 import Input from '~/components/ui/Input.vue'
 import Button from '~/components/ui/Button.vue'
 import { useSupabaseClient } from '#imports'
@@ -21,7 +21,6 @@ const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
-const isRegistered = ref(false)
 
 const handleRegister = async () => {
   if (!name.value || !email.value || !password.value) {
@@ -39,12 +38,17 @@ const handleRegister = async () => {
   successMessage.value = ''
 
   try {
+    const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/confirm`
+        : 'http://localhost:3000/confirm'
+
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
       options: {
         data: {
-          name: name.value
+          name: name.value,
+          emailRedirectTo: redirectUrl,
         }
       }
     })
@@ -55,7 +59,6 @@ const handleRegister = async () => {
     }
 
     if (data.user) {
-      isRegistered.value = true
       // Check if session exists (verification disabled) or needs email verification
       if (data.session) {
         successMessage.value = locale.value === 'id' 
@@ -65,7 +68,7 @@ const handleRegister = async () => {
           router.push('/onboarding')
         }, 2000)
       } else {
-        successMessage.value = t('auth.register.successMsg')
+        router.push({ path: '/auth/verify-email', query: { email: email.value } })
       }
     }
   } catch (err: any) {
@@ -79,10 +82,8 @@ const handleRegister = async () => {
 <template>
   <div class="px-6 py-12 min-h-screen flex flex-col bg-white">
     <div class="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-      <div v-if="!isRegistered" class="animate-in fade-in duration-500">
-        <div class="w-16 h-16 bg-primary rounded-3xl flex items-center justify-center mb-8 shadow-lg shadow-primary/30">
-          <span class="text-white text-3xl font-bold">S</span>
-        </div>
+      <div class="animate-in fade-in duration-500">
+        <img src="~/assets/images/logo-sehatin-with-text.png" alt="Sehatin Logo" class="w-40 object-contain mb-8 mx-auto" />
         
         <h1 class="text-3xl font-bold text-secondary mb-2">
           {{ t('auth.register.title') }}
@@ -120,51 +121,10 @@ const handleRegister = async () => {
             <ArrowRight class="w-5 h-5 ml-2" />
           </Button>
         </form>
-
-        <div class="relative flex items-center justify-center mb-8">
-          <div class="border-t border-slate-200 absolute w-full"></div>
-          <span class="bg-white px-4 text-xs font-bold text-text-muted relative z-10">
-            {{ t('auth.register.orContinue') }}
-          </span>
-        </div>
-
-        <div class="flex gap-4">
-          <Button variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
-            Google
-          </Button>
-          <Button variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
-            Apple
-          </Button>
-        </div>
-      </div>
-
-      <!-- Success Screen -->
-      <div v-else class="text-center py-8 animate-in fade-in zoom-in-95 duration-500">
-        <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 shadow-lg shadow-green-100/50">
-          <CheckCircle2 class="w-10 h-10 text-primary-500" />
-        </div>
-        
-        <h1 class="text-2xl font-bold text-secondary mb-3">
-          {{ t('auth.register.successTitle') }}
-        </h1>
-        <p class="text-text-muted text-sm leading-relaxed mb-6">
-          {{ t('auth.register.successMsg') }}
-          <strong class="text-secondary font-semibold block mt-1.5 p-2 bg-slate-50 rounded-xl border border-slate-100">{{ email }}</strong>
-        </p>
-        
-        <div class="bg-emerald-50/50 border border-emerald-100/70 rounded-2xl p-4 text-xs text-emerald-800 text-left mb-8 flex gap-3 items-start leading-relaxed">
-          <span class="text-lg">📧</span>
-          <p>{{ t('auth.register.checkEmailMsg') }}</p>
-        </div>
-
-        <Button to="/auth/login" variant="primary" block size="lg" class="font-bold">
-          {{ t('auth.register.loginBtn') }}
-          <ArrowRight class="w-5 h-5 ml-2" />
-        </Button>
       </div>
     </div>
 
-    <p v-if="!isRegistered" class="text-center text-sm text-text-muted mt-8">
+    <p class="text-center text-sm text-text-muted mt-8">
       {{ t('auth.register.alreadyHaveAccount') }} 
       <NuxtLink to="/auth/login" class="text-primary font-bold hover:underline">
         {{ t('auth.register.loginLink') }}

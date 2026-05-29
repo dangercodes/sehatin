@@ -561,7 +561,8 @@ const formatRelativeTime = (isoString: string) => {
       </div>
     </header>
 
-    <!-- Navigation Sub-Tabs -->
+    <template v-if="userStore.isAuthenticated">
+      <!-- Navigation Sub-Tabs -->
     <div class="flex bg-slate-100 p-1.5 rounded-2xl mb-8 max-w-xl shadow-inner">
       <button 
         @click="activeTab = 'timeline'"
@@ -772,19 +773,19 @@ const formatRelativeTime = (isoString: string) => {
             <!-- Macros display row -->
             <div class="grid grid-cols-4 gap-1.5 pt-3 border-t border-slate-50 text-center">
               <div class="bg-orange-50/50 rounded-xl p-1.5">
-                <span class="text-[8px] font-extrabold text-text-muted block uppercase">Kcal</span>
+                <span class="text-[8px] font-extrabold text-text-muted dark:!text-white block uppercase">Kcal</span>
                 <span class="text-xs font-black text-secondary mt-0.5 block">{{ recipe.calories }}</span>
               </div>
               <div class="bg-blue-50/50 rounded-xl p-1.5">
-                <span class="text-[8px] font-extrabold text-text-muted block uppercase">Prot</span>
+                <span class="text-[8px] font-extrabold text-text-muted dark:!text-white block uppercase">Prot</span>
                 <span class="text-xs font-black text-secondary mt-0.5 block">{{ recipe.protein }}g</span>
               </div>
               <div class="bg-amber-50/50 rounded-xl p-1.5">
-                <span class="text-[8px] font-extrabold text-text-muted block uppercase">Carb</span>
+                <span class="text-[8px] font-extrabold text-text-muted dark:!text-white block uppercase">Carb</span>
                 <span class="text-xs font-black text-secondary mt-0.5 block">{{ recipe.carbs }}g</span>
               </div>
               <div class="bg-rose-50/50 rounded-xl p-1.5">
-                <span class="text-[8px] font-extrabold text-text-muted block uppercase">Fat</span>
+                <span class="text-[8px] font-extrabold text-text-muted dark:!text-white block uppercase">Fat</span>
                 <span class="text-xs font-black text-secondary mt-0.5 block">{{ recipe.fat }}g</span>
               </div>
             </div>
@@ -914,6 +915,48 @@ const formatRelativeTime = (isoString: string) => {
       </div>
 
     </div>
+
+    </template>
+
+    <!-- GUEST CTA BLOCK -->
+    <template v-else>
+      <div class="max-w-2xl mx-auto mt-12 text-center animate-in zoom-in-95 duration-500">
+        <div class="w-24 h-24 bg-primary/10 text-primary rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <Users class="w-12 h-12" />
+        </div>
+        <h2 class="text-3xl font-black text-secondary mb-4">{{ t('community.guestTitle') }}</h2>
+        <p class="text-text-muted leading-relaxed mb-8 max-w-lg mx-auto">
+          {{ t('community.guestDesc') }}
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button to="/auth/register" size="lg" class="w-full sm:w-auto shadow-xl shadow-primary/20 font-black px-8">
+            {{ t('community.btnRegister') }}
+          </Button>
+          <Button to="/auth/login" variant="outline" size="lg" class="w-full sm:w-auto border-2 border-slate-200 text-secondary hover:bg-slate-50 font-bold px-8">
+            {{ t('community.btnLogin') }}
+          </Button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-16 text-left">
+          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft">
+            <span class="text-2xl block mb-2">🔥</span>
+            <h4 class="font-bold text-secondary text-sm">{{ t('community.guestFeat1Title') }}</h4>
+            <p class="text-[10px] text-text-muted mt-1">{{ t('community.guestFeat1Desc') }}</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft">
+            <span class="text-2xl block mb-2">🥗</span>
+            <h4 class="font-bold text-secondary text-sm">{{ t('community.guestFeat2Title') }}</h4>
+            <p class="text-[10px] text-text-muted mt-1">{{ t('community.guestFeat2Desc') }}</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft">
+            <span class="text-2xl block mb-2">🤝</span>
+            <h4 class="font-bold text-secondary text-sm">{{ t('community.guestFeat3Title') }}</h4>
+            <p class="text-[10px] text-text-muted mt-1">{{ t('community.guestFeat3Desc') }}</p>
+          </div>
+        </div>
+      </div>
+    </template>
 
     <!-- DETAILED HEALTHY RECIPE POPUP DIALOG MODAL (Tab 2 Component overlay) -->
     <Transition

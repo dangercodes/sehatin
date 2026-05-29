@@ -22,7 +22,7 @@ const activeBadgeDetail = computed(() => {
 
 <template>
   <!-- Gamification Widget Card -->
-  <Card padding="p-5" class="bg-gradient-to-br from-white to-orange-50/20 border border-orange-100 shadow-soft relative overflow-hidden group">
+  <Card padding="p-5" class="bg-gradient-to-br from-white to-orange-50/20 dark:from-slate-800 dark:to-orange-900/10 border border-orange-100 dark:border-orange-800/30 shadow-soft relative overflow-hidden group">
     <!-- Premium Sparkly/Flame Vector Background -->
     <div class="absolute top-0 right-0 w-24 h-24 bg-orange-400/5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
     <svg class="absolute -right-6 -bottom-8 w-32 h-32 text-orange-500/[0.04] pointer-events-none transition-transform duration-700 group-hover:scale-105" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -56,7 +56,7 @@ const activeBadgeDetail = computed(() => {
         </button>
         <button 
           @click="gamificationStore.resetGamification()" 
-          class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 border border-slate-200/50 hover:scale-105 active:scale-95 transition-all duration-200"
+          class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-600/50 hover:scale-105 active:scale-95 transition-all duration-200"
           :title="t('gamification.resetBtn')"
         >
           <Lock class="w-3.5 h-3.5" />
@@ -85,7 +85,7 @@ const activeBadgeDetail = computed(() => {
             :class="[
               badge.unlocked 
                 ? 'text-white shadow-md hover:scale-110 hover:shadow-lg' 
-                : 'bg-slate-50 border border-slate-200/60 text-slate-400 hover:border-slate-300',
+                : 'bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-600',
               badge.unlocked && badge.id === 'soda_destroyer' ? 'bg-gradient-to-tr from-orange-500 to-amber-500 shadow-orange-500/20' : '',
               badge.unlocked && badge.id === 'hydration_king' ? 'bg-gradient-to-tr from-blue-500 to-cyan-400 shadow-blue-500/20' : '',
               badge.unlocked && badge.id === 'habit_builder' ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-emerald-500/20' : '',
@@ -114,7 +114,7 @@ const activeBadgeDetail = computed(() => {
       <!-- Dynamic Interactive Badges Description Box -->
       <div 
         v-if="activeBadgeDetail" 
-        class="mt-3.5 p-3 rounded-2xl bg-white/75 backdrop-blur-md border border-slate-100/50 shadow-xs transition-all duration-300 animate-in fade-in slide-in-from-top-1"
+        class="mt-3.5 p-3 rounded-2xl bg-white/75 dark:bg-slate-800/75 backdrop-blur-md border border-slate-100/50 dark:border-slate-700/50 shadow-xs transition-all duration-300 animate-in fade-in slide-in-from-top-1"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-black text-secondary uppercase tracking-wide">
@@ -122,7 +122,7 @@ const activeBadgeDetail = computed(() => {
           </span>
           <span 
             class="text-[9px] font-black rounded-full px-2 py-0.5 uppercase tracking-wider"
-            :class="activeBadgeDetail.unlocked ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'"
+            :class="activeBadgeDetail.unlocked ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'"
           >
             {{ activeBadgeDetail.unlocked ? (locale === 'id' ? 'Terbuka' : 'Unlocked') : (locale === 'id' ? 'Terkunci' : 'Locked') }}
           </span>
@@ -160,7 +160,7 @@ const activeBadgeDetail = computed(() => {
             {{ ach.current }} / {{ ach.target }}
           </span>
         </div>
-        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative">
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden relative">
           <div 
             class="h-full rounded-full transition-all duration-500 bg-gradient-to-r"
             :class="[

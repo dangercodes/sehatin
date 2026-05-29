@@ -32,6 +32,7 @@
       "subtitle": "Track your daily calories, monitor water intake, and reach your ideal weight with Sehatin's beautifully simple interface.",
       "ctaStart": "Start Your Journey",
       "ctaLearn": "Learn More",
+      "ctaGuest": "Explore as Guest",
       "mockupGreeting": "Daily Summary",
       "mockupTarget": "Target",
       "mockupRemaining": "remaining"
@@ -150,6 +151,9 @@
     "errSave": "An error occurred while saving your data"
   },
   "auth": {
+    "guestExpiredTitle": "Time's Up! ⏱️",
+    "guestExpiredDesc": "Your 7-day Guest trial has ended. Register for free now to permanently save your health data and unlock all community features.",
+    "btnRegisterNow": "Register Free Now",
     "login": {
       "title": "Welcome back!",
       "subtitle": "Sign in to continue your health journey.",
@@ -161,7 +165,8 @@
       "dontHaveAccount": "Don't have an account?",
       "signUpLink": "Sign up",
       "errEmailPass": "Email and password are required",
-      "errLogin": "An error occurred during log in"
+      "errLogin": "An error occurred during log in",
+      "guestBtn": "Continue as Guest"
     },
     "register": {
       "title": "Join Sehatin!",
@@ -359,6 +364,16 @@
     "weightBody": "It's time to log your weight today to keep track of your long-term progress!"
   },
   "community": {
+    "guestTitle": "Join Our Community",
+    "guestDesc": "Join thousands of other healthy lifestyle enthusiasts. Share your diet progress, find supportive friends, and explore hundreds of premium healthy recipes.",
+    "btnRegister": "Register for Free",
+    "btnLogin": "Already have an account?",
+    "guestFeat1Title": "Share Progress",
+    "guestFeat1Desc": "Share your daily steps and diet goals.",
+    "guestFeat2Title": "Healthy Recipes",
+    "guestFeat2Desc": "Access a collection of premium diet recipes.",
+    "guestFeat3Title": "Discussion Groups",
+    "guestFeat3Desc": "Chat with other diet enthusiasts.",
     "title": "Community & Sharing",
     "subtitle": "Share your daily progress, find balanced recipes, & chat with fellow health enthusiasts.",
     "tabTimeline": "Share Progress",

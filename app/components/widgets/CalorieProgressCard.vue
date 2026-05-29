@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 <template>
   <!-- Main Calorie Progress -->
-  <Card padding="p-6" class="flex flex-col items-center relative overflow-hidden bg-gradient-to-br from-white to-primary-50 border-none">
+  <Card padding="p-6" class="flex flex-col items-center relative overflow-hidden bg-gradient-to-br from-white to-primary-50 dark:from-slate-800 dark:to-primary-900/20 border-none">
     <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-24 h-24 bg-accent/10 rounded-full blur-xl -ml-10 -mb-10 pointer-events-none"></div>
     

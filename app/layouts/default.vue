@@ -1,11 +1,35 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import BottomNav from '~/components/layout/BottomNav.vue'
 import FloatingActionButton from '~/components/layout/FloatingActionButton.vue'
 import Sidebar from '~/components/layout/Sidebar.vue'
+import Button from '~/components/ui/Button.vue'
 import { usePlannerStore } from '~/stores/planner'
-import { BellRing, X } from '@lucide/vue'
+import { useUserStore } from '~/stores/user'
+import { useI18n } from '#imports'
+import { BellRing, X, Clock } from '@lucide/vue'
 
 const plannerStore = usePlannerStore()
+const userStore = useUserStore()
+const { t } = useI18n()
+
+const isGuestExpired = ref(false)
+
+onMounted(() => {
+  if (typeof window !== 'undefined' && !userStore.isAuthenticated) {
+    const guestStartedAt = localStorage.getItem('sehatin_guest_start')
+    const now = Date.now()
+    if (!guestStartedAt) {
+      localStorage.setItem('sehatin_guest_start', now.toString())
+    } else {
+      const msPassed = now - parseInt(guestStartedAt, 10)
+      const sevenDays = 7 * 24 * 60 * 60 * 1000
+      if (msPassed > sevenDays) {
+        isGuestExpired.value = true
+      }
+    }
+  }
+})
 </script>
 
 <template>
@@ -25,10 +49,10 @@ const plannerStore = usePlannerStore()
       </main>
 
       <!-- FAB (Mobile Only) -->
-      <FloatingActionButton class="absolute bottom-24 right-4 z-20" />
+      <FloatingActionButton class="fixed md:absolute bottom-24 right-4 z-20" />
 
       <!-- Bottom Navigation (Mobile Only) -->
-      <BottomNav class="absolute bottom-0 w-full z-10" />
+      <BottomNav class="fixed md:absolute bottom-0 w-full z-10" />
     </div>
 
     <!-- Global Toast Alerts Overlay -->
@@ -61,5 +85,24 @@ const plannerStore = usePlannerStore()
         </div>
       </div>
     </Transition>
+    <!-- Guest Expired Modal Overlay -->
+    <div 
+      v-if="isGuestExpired"
+      class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
+        <div class="w-20 h-20 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <Clock class="w-10 h-10" />
+        </div>
+        <h3 class="text-2xl font-black text-secondary mb-3">{{ t('auth.guestExpiredTitle') }}</h3>
+        <p class="text-sm text-text-muted leading-relaxed font-medium mb-8">
+          {{ t('auth.guestExpiredDesc') }}
+        </p>
+        
+        <Button to="/auth/register" block size="lg" class="shadow-xl shadow-primary/30 font-bold mb-3">
+          {{ t('auth.btnRegisterNow') }}
+        </Button>
+      </div>
+    </div>
   </div>
 </template>
