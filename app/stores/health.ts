@@ -95,7 +95,9 @@ export const useHealthStore = defineStore('health', {
     // Steps & Activity (stored in localStorage, resets daily)
     steps: 0,
     activeCalories: 0,
-    activeMinutes: 0
+    activeMinutes: 0,
+    _waterSyncTimeout: null as any,
+    _pendingWaterAdds: 0
   }),
   getters: {
     calorieProgress: (state) => {
@@ -186,22 +188,44 @@ export const useHealthStore = defineStore('health', {
   },
   actions: {
     async fetchTodayData() {
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+
+      if (authStore.isGuest) {
+        if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('sehatin_guest_profile')
+          if (saved) {
+            try {
+              const data = JSON.parse(saved)
+              if (data.daily_goal_calories !== undefined) this.dailyGoalCalories = data.daily_goal_calories
+              if (data.daily_goal_water !== undefined) this.dailyGoalWater = data.daily_goal_water
+              if (data.height !== undefined) this.height = data.height
+              if (data.goal_weight !== undefined) this.goalWeight = data.goal_weight
+            } catch (e) {}
+          }
+        }
+        
+        // Let execution continue to load localStorage steps and gamification sync for guest
+      }
+
       const supabase = useSupabaseClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user && !authStore.isGuest) return
 
       // 1. Fetch User Profile
-      const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
+      if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
 
-      if (profile) {
-        this.dailyGoalCalories = profile.daily_goal_calories || 2400
-        this.dailyGoalWater = profile.daily_goal_water || 8
-        this.height = Number(profile.height) || 170
-        this.goalWeight = Number(profile.goal_weight) || 65.0
+        if (profile) {
+          this.dailyGoalCalories = profile.daily_goal_calories || 2400
+          this.dailyGoalWater = profile.daily_goal_water || 8
+          this.height = Number(profile.height) || 170
+          this.goalWeight = Number(profile.goal_weight) || 65.0
+        }
       }
 
       // Start of today in local/UTC timezone
@@ -210,10 +234,11 @@ export const useHealthStore = defineStore('health', {
       const isoToday = today.toISOString()
 
       // 2. Fetch Meals Logged Today
-      const { data: meals } = await supabase
-          .from('meals')
-          .select('*')
-          .eq('user_id', user.id)
+      if (user) {
+        const { data: meals } = await supabase
+            .from('meals')
+            .select('*')
+            .eq('user_id', user.id)
           .gte('created_at', isoToday)
           .order('created_at', { ascending: false })
 
@@ -270,23 +295,27 @@ export const useHealthStore = defineStore('health', {
         this.macros.sodium.current = sodium
         this.macros.fiber.current = fiber
       }
+      }
 
       // 3. Fetch Water Logs Today
-      const { data: waterLogs } = await supabase
-        .from('water_logs')
-        .select('amount')
-        .eq('user_id', user.id)
+      if (user) {
+        const { data: waterLogs } = await supabase
+          .from('water_logs')
+          .select('amount')
+          .eq('user_id', user.id)
         .gte('created_at', isoToday)
 
       if (waterLogs) {
         this.consumedWater = waterLogs.reduce((acc, curr) => acc + (curr.amount || 1), 0)
       }
+      }
 
       // 4. Fetch Weight Logs History
-      const { data: weightLogs } = await supabase
-        .from('weight_logs')
-        .select('*')
-        .eq('user_id', user.id)
+      if (user) {
+        const { data: weightLogs } = await supabase
+          .from('weight_logs')
+          .select('*')
+          .eq('user_id', user.id)
         .order('created_at', { ascending: true })
 
       if (weightLogs && weightLogs.length > 0) {
@@ -307,6 +336,7 @@ export const useHealthStore = defineStore('health', {
             date: dateString
           }
         })
+      }
       }
 
       // 5. Fetch steps & activity from localStorage (resets daily)
@@ -364,52 +394,73 @@ export const useHealthStore = defineStore('health', {
           }
         }
       }
+
+      // Sync gamification targets with fetched data
+      const { useGamificationStore } = await import('./gamification')
+      useGamificationStore().syncTargets(this)
     },
 
     async addWater() {
-      const supabase = useSupabaseClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      // Optimistic Update: instantly reflect in the UI
+      this.consumedWater++
 
-      // Start of today in local/UTC timezone
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const isoToday = today.toISOString()
-
-      // Check if there is already a water log entry for today
-      const { data: existingLogs, error: fetchError } = await supabase
-        .from('water_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('created_at', isoToday)
-        .order('created_at', { ascending: false })
-        .limit(1)
-
-      const existingLog = existingLogs && existingLogs.length > 0 ? existingLogs[0] : null
-
-      if (existingLog) {
-        // Increment amount of existing row
-        const { error: updateError } = await supabase
-          .from('water_logs')
-          .update({ amount: (existingLog.amount || 0) + 1 })
-          .eq('id', existingLog.id)
-
-        if (!updateError) {
-          this.consumedWater++
-        }
-      } else {
-        // Create new log row for today
-        const { error: insertError } = await supabase
-          .from('water_logs')
-          .insert({
-            user_id: user.id,
-            amount: 1
-          })
-
-        if (!insertError) {
-          this.consumedWater++
-        }
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+      if (authStore.isGuest) {
+        return
       }
+
+      const userId = await authStore.getUserId()
+      if (!userId || userId === 'guest-user') return
+
+      // Add to pending batch
+      this._pendingWaterAdds++
+
+      // Clear existing timeout if user clicked again
+      if (this._waterSyncTimeout) {
+        clearTimeout(this._waterSyncTimeout)
+      }
+
+      // Debounce DB sync
+      this._waterSyncTimeout = setTimeout(async () => {
+        const addsToSync = this._pendingWaterAdds
+        this._pendingWaterAdds = 0
+
+        try {
+          const supabase = useSupabaseClient()
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          const isoToday = today.toISOString()
+
+          const { data: existingLogs } = await supabase
+            .from('water_logs')
+            .select('*')
+            .eq('user_id', userId)
+            .gte('created_at', isoToday)
+            .order('created_at', { ascending: false })
+            .limit(1)
+
+          const existingLog = existingLogs && existingLogs.length > 0 ? existingLogs[0] : null
+
+          if (existingLog) {
+            await supabase
+              .from('water_logs')
+              .update({ amount: (existingLog.amount || 0) + addsToSync })
+              .eq('id', existingLog.id)
+          } else {
+            await supabase
+              .from('water_logs')
+              .insert({
+                user_id: userId,
+                amount: addsToSync
+              })
+          }
+        } catch (error) {
+          console.error('Failed to sync water logs:', error)
+          // Revert optimistic update on hard error if we wanted to, 
+          // but usually it's fine to leave it for smooth UX.
+        }
+      }, 700) // 700ms debounce
     },
 
     async addMeal(meal: {
@@ -420,16 +471,47 @@ export const useHealthStore = defineStore('health', {
       fat: number
       category: string
     }) {
-      const supabase = useSupabaseClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('User not authenticated')
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+
+      if (authStore.isGuest) {
+        // Mock success for guest
+        const micros = getMicroNutrients(meal.name, meal.calories, meal.carbs, meal.fat, meal.protein)
+        
+        this.consumedCalories += meal.calories
+        this.macros.protein.current += meal.protein
+        this.macros.carbs.current += meal.carbs
+        this.macros.fat.current += meal.fat
+        this.macros.sugar.current += micros.sugar
+        this.macros.sodium.current += micros.sodium
+        this.macros.fiber.current += micros.fiber
+
+        const now = new Date()
+        this.recentMeals.unshift({
+          id: 'guest-meal-' + Date.now(),
+          name: meal.name,
+          calories: meal.calories,
+          protein: meal.protein,
+          carbs: meal.carbs,
+          fat: meal.fat,
+          sugar: micros.sugar,
+          sodium: micros.sodium,
+          fiber: micros.fiber,
+          category: meal.category,
+          time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        })
+        return
       }
+
+      const userId = await authStore.getUserId()
+      if (!userId || userId === 'guest-user') throw new Error('User not authenticated')
+
+      const supabase = useSupabaseClient()
 
       const { error } = await supabase
         .from('meals')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           name: meal.name,
           calories: Math.round(meal.calories),
           protein: Math.round(meal.protein),
@@ -447,14 +529,32 @@ export const useHealthStore = defineStore('health', {
     },
 
     async addWeight(weight: number) {
-      const supabase = useSupabaseClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
 
+      if (authStore.isGuest) {
+        this.currentWeight = Number(weight)
+        
+        const dateString = new Date().toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'numeric',
+          day: 'numeric'
+        })
+        this.weightHistory.push({
+          weight: Number(weight),
+          date: dateString
+        })
+        return
+      }
+
+      const userId = await authStore.getUserId()
+      if (!userId || userId === 'guest-user') return
+
+      const supabase = useSupabaseClient()
       const { error } = await supabase
         .from('weight_logs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           weight: Number(weight)
         })
 
@@ -464,11 +564,36 @@ export const useHealthStore = defineStore('health', {
     },
 
     async deleteMeal(mealId: string) {
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+
+      if (authStore.isGuest) {
+        // For guest, simply remove it from array and subtract macros
+        const index = this.recentMeals.findIndex(m => m.id === mealId)
+        if (index > -1) {
+          const m = this.recentMeals[index]
+          this.consumedCalories -= m.calories
+          this.macros.protein.current -= m.protein
+          this.macros.carbs.current -= m.carbs
+          this.macros.fat.current -= m.fat
+          this.macros.sugar.current -= m.sugar
+          this.macros.sodium.current -= m.sodium
+          this.macros.fiber.current -= m.fiber
+          
+          this.recentMeals.splice(index, 1)
+        }
+        return
+      }
+
+      const userId = await authStore.getUserId()
+      if (!userId || userId === 'guest-user') return
+
       const supabase = useSupabaseClient()
       const { error } = await supabase
         .from('meals')
         .delete()
         .eq('id', mealId)
+        .eq('user_id', userId)
 
       if (!error) {
         await this.fetchTodayData()

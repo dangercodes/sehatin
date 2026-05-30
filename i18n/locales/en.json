@@ -104,7 +104,9 @@
       "textNormal": "Normal (Ideal Weight)",
       "textOverweight": "Overweight",
       "textObese": "Obese",
-      "textTip": "Tip: A healthy BMI ranges from 18.5 to 24.9. Maintain a balanced diet and regular physical exercise!"
+      "textTip": "Tip: A healthy BMI ranges from 18.5 to 24.9. Maintain a balanced diet and regular physical exercise!",
+      "emptyText": "Enter your height and weight to see your calculation results here instantly.",
+      "categoryLabel": "Category"
     },
     "faq": {
       "title": "Frequently Asked Questions",

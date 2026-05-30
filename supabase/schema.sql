@@ -48,8 +48,8 @@ alter table public.water_logs enable row level security;
 alter table public.weight_logs enable row level security;
 
 -- 6. Create RLS Policies
--- Profiles: Users can view and update their own profile
-create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
+-- Profiles: Users can view all profiles (needed for community names), but only update their own
+create policy "Users can view all profiles" on public.profiles for select using (true);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
 -- Meals: Users can manage their own meals

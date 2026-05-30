@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Mail, Lock, ArrowRight } from '@lucide/vue'
 import Input from '~/components/ui/Input.vue'
 import Button from '~/components/ui/Button.vue'
-import { useSupabaseClient } from '#imports'
+import { useAuthStore } from '~/stores/auth'
+import { storeToRefs } from 'pinia'
 import { useI18n } from '#imports'
 
 definePageMeta({
@@ -12,53 +13,27 @@ definePageMeta({
 })
 
 const router = useRouter()
-const supabase = useSupabaseClient()
+const authStore = useAuthStore()
+const { loading, error } = storeToRefs(authStore)
 const { t } = useI18n()
 
 const email = ref('')
 const password = ref('')
-const loading = ref(false)
-const errorMessage = ref('')
+const localError = ref('')
+
+const errorMessage = computed(() => {
+  return localError.value || error.value
+})
 
 const handleLogin = async () => {
+  localError.value = ''
+
   if (!email.value || !password.value) {
-    errorMessage.value = t('auth.login.errEmailPass')
+    localError.value = t('auth.login.errEmailPass')
     return
   }
-
-  loading.value = true
-  errorMessage.value = ''
   
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value
-    })
-
-    if (error) {
-      errorMessage.value = error.message
-      return
-    }
-
-    if (data.user) {
-      // Fetch profile to see if user has completed onboarding
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('height, goal_weight')
-        .eq('id', data.user.id)
-        .single()
-      
-      if (profile && (!profile.height || !profile.goal_weight)) {
-        router.push('/onboarding')
-      } else {
-        router.push('/dashboard')
-      }
-    }
-  } catch (err: any) {
-    errorMessage.value = err.message || t('auth.login.errLogin')
-  } finally {
-    loading.value = false
-  }
+  await authStore.login(email.value, password.value)
 }
 </script>
 
@@ -120,7 +95,7 @@ const handleLogin = async () => {
         </Button>
       </div> -->
 
-      <Button to="/dashboard" variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2">
+      <Button @click="authStore.loginGuest()" variant="outline" block size="lg" class="border-slate-200 text-secondary hover:bg-slate-50 font-bold border-2" :loading="authStore.loading">
         {{ t('auth.login.guestBtn') }}
       </Button>
     </div>

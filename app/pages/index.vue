@@ -7,12 +7,14 @@ import {
 import Button from '~/components/ui/Button.vue'
 import { useI18n } from '#imports'
 import LanguageSwitcher from '~/components/widgets/LanguageSwitcher.vue'
+import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
   layout: 'landing'
 })
 
 const { t, locale } = useI18n()
+const authStore = useAuthStore()
 
 // Showcase Active Tab
 const activeShowcaseTab = ref<'food' | 'water' | 'weight'>('food')
@@ -60,7 +62,7 @@ const toggleFaq = (index: number) => {
           <NuxtLink to="/auth/login" class="text-secondary font-semibold hover:text-primary transition-colors hidden sm:block">
             {{ t('common.login') }}
           </NuxtLink>
-          <Button to="/onboarding" size="sm" class="shadow-lg shadow-primary/20">
+          <Button to="/auth/register" size="sm" class="shadow-lg shadow-primary/20">
             {{ t('common.getStarted') }}
           </Button>
         </div>
@@ -90,11 +92,11 @@ const toggleFaq = (index: number) => {
             {{ t('landing.hero.subtitle') }}
           </p>
           <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-            <Button to="/onboarding" size="lg" class="w-full sm:w-auto shadow-xl shadow-primary/30">
+            <Button to="/auth/register" size="lg" class="w-full sm:w-auto shadow-xl shadow-primary/30">
               {{ t('landing.hero.ctaStart') }}
               <ArrowRight class="w-5 h-5 ml-2" />
             </Button>
-            <Button to="/dashboard" variant="outline" size="lg" class="w-full sm:w-auto border-2 border-slate-200 text-secondary hover:bg-slate-50">
+            <Button @click="authStore.loginGuest()" variant="outline" size="lg" class="w-full sm:w-auto border-2 border-slate-200 text-secondary hover:bg-slate-50" :loading="authStore.loading">
               {{ t('landing.hero.ctaGuest') }}
             </Button>
           </div>
@@ -592,7 +594,7 @@ const toggleFaq = (index: number) => {
           
           <div v-if="calculatedBmi === null" class="text-center space-y-4 py-8">
             <span class="text-5xl block">⚖️</span>
-            <p class="text-slate-200 text-sm font-medium">Masukkan tinggi dan berat badan Anda untuk melihat hasil perhitungan di sini secara instan.</p>
+            <p class="text-slate-200 text-sm font-medium">{{ t('landing.bmi.emptyText') }}</p>
           </div>
 
           <div v-else class="space-y-6 animate-in fade-in zoom-in-95 duration-500">
@@ -602,7 +604,7 @@ const toggleFaq = (index: number) => {
             </div>
 
             <div class="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-center">
-              <span class="text-xs text-slate-300 block font-medium">Category / Kategori</span>
+              <span class="text-xs text-slate-300 block font-medium">{{ t('landing.bmi.categoryLabel') }}</span>
               <span class="text-lg font-bold block mt-1 uppercase" :class="{
                 'text-blue-300': bmiCategory === 'underweight',
                 'text-emerald-300': bmiCategory === 'normal',
@@ -795,7 +797,7 @@ const toggleFaq = (index: number) => {
           {{ t('landing.cta.subtitle') }}
         </p>
         
-        <Button to="/onboarding" size="lg" class="bg-white !text-primary hover:bg-slate-50 hover:text-primary-700 shadow-xl shadow-secondary/20 scale-105 active:scale-100 transition-all font-black text-base px-8 py-4 rounded-2xl mx-auto block w-full sm:w-auto">
+        <Button to="/auth/register" size="lg" class="bg-white !text-primary hover:bg-slate-50 hover:text-primary-700 shadow-xl shadow-secondary/20 scale-105 active:scale-100 transition-all font-black text-base px-8 py-4 rounded-2xl mx-auto block w-full sm:w-auto">
           {{ t('landing.cta.button') }}
         </Button>
       </div>

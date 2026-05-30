@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Mail, Lock, User, ArrowRight } from '@lucide/vue'
+import { Mail, Lock, User, ArrowRight, CheckCircle2 } from '@lucide/vue'
 import Input from '~/components/ui/Input.vue'
 import Button from '~/components/ui/Button.vue'
-import { useSupabaseClient } from '#imports'
+import { useAuthStore } from '~/stores/auth'
+import { storeToRefs } from 'pinia'
 import { useI18n } from '#imports'
 
 definePageMeta({
@@ -12,77 +13,81 @@ definePageMeta({
 })
 
 const router = useRouter()
-const supabase = useSupabaseClient()
+const authStore = useAuthStore()
+const { loading, error, registrationSuccess } = storeToRefs(authStore)
 const { t, locale } = useI18n()
 
 const name = ref('')
 const email = ref('')
 const password = ref('')
-const loading = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
+const localError = ref('')
+
+const errorMessage = computed(() => {
+  return localError.value || error.value
+})
 
 const handleRegister = async () => {
+  localError.value = ''
+  
   if (!name.value || !email.value || !password.value) {
-    errorMessage.value = t('auth.register.errAllFields')
+    localError.value = t('auth.register.errAllFields')
     return
   }
 
   if (password.value.length < 6) {
-    errorMessage.value = t('auth.register.errPasswordLength')
+    localError.value = t('auth.register.errPasswordLength')
     return
   }
 
-  loading.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
-
-  try {
-    const redirectUrl = typeof window !== 'undefined'
-        ? `${window.location.origin}/confirm`
-        : 'http://localhost:3000/confirm'
-
-    const { data, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        data: {
-          name: name.value,
-          emailRedirectTo: redirectUrl,
-        }
-      }
-    })
-
-    if (error) {
-      errorMessage.value = error.message
-      return
-    }
-
-    if (data.user) {
-      // Check if session exists (verification disabled) or needs email verification
-      if (data.session) {
-        successMessage.value = locale.value === 'id' 
-          ? 'Registrasi berhasil! Mengalihkan ke onboarding...' 
-          : 'Registration successful! Redirecting to onboarding...'
-        setTimeout(() => {
-          router.push('/onboarding')
-        }, 2000)
-      } else {
-        router.push({ path: '/auth/verify-email', query: { email: email.value } })
-      }
-    }
-  } catch (err: any) {
-    errorMessage.value = err.message || (locale.value === 'id' ? 'Terjadi kesalahan saat registrasi' : 'An error occurred during registration')
-  } finally {
-    loading.value = false
-  }
+  await authStore.register(email.value, password.value, name.value)
 }
+
+const navigateToLogin = () => {
+  authStore.registrationSuccess = false
+  router.push('/auth/login')
+}
+
+onUnmounted(() => {
+  authStore.registrationSuccess = false
+})
 </script>
 
 <template>
   <div class="px-6 py-12 min-h-screen flex flex-col bg-white">
     <div class="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-      <div class="animate-in fade-in duration-500">
+      
+      <!-- Verification Sent Success State -->
+      <div v-if="registrationSuccess" class="animate-in fade-in zoom-in-95 duration-500 text-center py-8">
+        <div class="w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-primary-100 shadow-lg shadow-primary-100/50 relative">
+          <Mail class="w-10 h-10 text-primary animate-pulse" />
+          <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+            <CheckCircle2 class="w-6 h-6 text-white" />
+          </div>
+        </div>
+        
+        <h2 class="text-3xl font-bold text-secondary mb-3">
+          {{ t('auth.register.successTitle') }}
+        </h2>
+        
+        <p class="text-text-muted text-sm leading-relaxed mb-6">
+          {{ t('auth.register.successMsg') }}
+          <br />
+          <strong class="text-secondary font-bold text-base block mt-2 p-3 bg-slate-50 rounded-2xl border border-slate-100">{{ email }}</strong>
+        </p>
+        
+        <div class="bg-blue-50/50 border border-blue-100/70 rounded-2xl p-4 text-xs text-blue-800 text-left mb-10 flex gap-3 items-start leading-relaxed shadow-sm">
+          <span class="text-xl">💡</span>
+          <p>{{ t('auth.register.checkEmailMsg') }}</p>
+        </div>
+
+        <Button @click="navigateToLogin" variant="primary" block size="lg" class="font-bold shadow-lg shadow-primary/30">
+          {{ t('auth.register.loginBtn') }}
+          <ArrowRight class="w-5 h-5 ml-2" />
+        </Button>
+      </div>
+
+      <!-- Register Form -->
+      <div v-else class="animate-in fade-in duration-500">
         <img src="~/assets/images/logo-sehatin-with-text.png" alt="Sehatin Logo" class="w-40 object-contain mb-8 mx-auto" />
         
         <h1 class="text-3xl font-bold text-secondary mb-2">
@@ -124,7 +129,7 @@ const handleRegister = async () => {
       </div>
     </div>
 
-    <p class="text-center text-sm text-text-muted mt-8">
+    <p v-if="!registrationSuccess" class="text-center text-sm text-text-muted mt-8">
       {{ t('auth.register.alreadyHaveAccount') }} 
       <NuxtLink to="/auth/login" class="text-primary font-bold hover:underline">
         {{ t('auth.register.loginLink') }}

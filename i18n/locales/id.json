@@ -104,7 +104,9 @@
       "textNormal": "Berat Badan Normal (Ideal)",
       "textOverweight": "Kelebihan Berat Badan",
       "textObese": "Obesitas",
-      "textTip": "Tip: BMI ideal berkisar antara 18.5 hingga 24.9. Pertahankan pola makan seimbang dan olahraga teratur!"
+      "textTip": "Tip: BMI ideal berkisar antara 18.5 hingga 24.9. Pertahankan pola makan seimbang dan olahraga teratur!",
+      "emptyText": "Masukkan tinggi dan berat badan Anda untuk melihat hasil perhitungan di sini secara instan.",
+      "categoryLabel": "Kategori"
     },
     "faq": {
       "title": "Pertanyaan yang Sering Diajukan",

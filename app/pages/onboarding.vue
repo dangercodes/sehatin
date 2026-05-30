@@ -52,15 +52,20 @@ const handleNext = async () => {
     loading.value = true
     try {
       const supabase = useSupabaseClient()
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      const { useAuthStore } = await import('~/stores/auth')
+      const authStore = useAuthStore()
+      const userId = await authStore.getUserId()
 
-      if (userError || !user) {
+      if (!userId) {
         errorMessage.value = t('onboarding.errSession')
         loading.value = false
         return
       }
 
-      const userId = user.id
+      if (userId === 'guest-user') {
+        router.push('/dashboard')
+        return
+      }
 
       // Calculate calorie targets based on selected goal
       let calorieGoal = 2200
@@ -179,16 +184,19 @@ const handleNext = async () => {
             <Button 
               :variant="goal === 'lose' ? 'primary' : 'outline'" 
               block 
-              class="justify-start h-20 text-left px-6 py-4 transition-all duration-300" 
+              class="justify-start h-auto min-h-[5rem] text-left px-6 py-4 transition-all duration-300" 
               :class="goal === 'lose' ? 'shadow-md shadow-primary/20' : 'text-secondary border-slate-200 border-2 hover:bg-slate-50'"
               @click="goal = 'lose'"
             >
-              <div>
-                <div class="font-bold text-base" :class="goal === 'lose' ? 'text-white' : 'text-secondary'">
-                  {{ t('onboarding.goalLoseTitle') }}
-                </div>
-                <div class="text-xs opacity-80 mt-0.5" :class="goal === 'lose' ? 'text-white/90' : 'text-text-muted'">
-                  {{ t('onboarding.goalLoseDesc') }}
+              <div class="flex items-center gap-4 w-full">
+                <div class="text-3xl transition-transform duration-300" :class="goal === 'lose' ? 'scale-110 drop-shadow-sm' : 'opacity-70 grayscale-[30%]'">🔥</div>
+                <div>
+                  <div class="font-bold text-base" :class="goal === 'lose' ? 'text-white' : 'text-secondary'">
+                    {{ t('onboarding.goalLoseTitle') }}
+                  </div>
+                  <div class="text-xs opacity-80 mt-0.5" :class="goal === 'lose' ? 'text-white/90' : 'text-text-muted'">
+                    {{ t('onboarding.goalLoseDesc') }}
+                  </div>
                 </div>
               </div>
             </Button>
@@ -196,16 +204,19 @@ const handleNext = async () => {
             <Button 
               :variant="goal === 'maintain' ? 'primary' : 'outline'" 
               block 
-              class="justify-start h-20 text-left px-6 py-4 transition-all duration-300" 
+              class="justify-start h-auto min-h-[5rem] text-left px-6 py-4 transition-all duration-300" 
               :class="goal === 'maintain' ? 'shadow-md shadow-primary/20' : 'text-secondary border-slate-200 border-2 hover:bg-slate-50'"
               @click="goal = 'maintain'"
             >
-              <div>
-                <div class="font-bold text-base" :class="goal === 'maintain' ? 'text-white' : 'text-secondary'">
-                  {{ t('onboarding.goalMaintainTitle') }}
-                </div>
-                <div class="text-xs opacity-80 mt-0.5" :class="goal === 'maintain' ? 'text-white/90' : 'text-text-muted'">
-                  {{ t('onboarding.goalMaintainDesc') }}
+              <div class="flex items-center gap-4 w-full">
+                <div class="text-3xl transition-transform duration-300" :class="goal === 'maintain' ? 'scale-110 drop-shadow-sm' : 'opacity-70 grayscale-[30%]'">⚖️</div>
+                <div>
+                  <div class="font-bold text-base" :class="goal === 'maintain' ? 'text-white' : 'text-secondary'">
+                    {{ t('onboarding.goalMaintainTitle') }}
+                  </div>
+                  <div class="text-xs opacity-80 mt-0.5" :class="goal === 'maintain' ? 'text-white/90' : 'text-text-muted'">
+                    {{ t('onboarding.goalMaintainDesc') }}
+                  </div>
                 </div>
               </div>
             </Button>
@@ -213,16 +224,19 @@ const handleNext = async () => {
             <Button 
               :variant="goal === 'gain' ? 'primary' : 'outline'" 
               block 
-              class="justify-start h-20 text-left px-6 py-4 transition-all duration-300" 
+              class="justify-start h-auto min-h-[5rem] text-left px-6 py-4 transition-all duration-300" 
               :class="goal === 'gain' ? 'shadow-md shadow-primary/20' : 'text-secondary border-slate-200 border-2 hover:bg-slate-50'"
               @click="goal = 'gain'"
             >
-              <div>
-                <div class="font-bold text-base" :class="goal === 'gain' ? 'text-white' : 'text-secondary'">
-                  {{ t('onboarding.goalGainTitle') }}
-                </div>
-                <div class="text-xs opacity-80 mt-0.5" :class="goal === 'gain' ? 'text-white/90' : 'text-text-muted'">
-                  {{ t('onboarding.goalGainDesc') }}
+              <div class="flex items-center gap-4 w-full">
+                <div class="text-3xl transition-transform duration-300" :class="goal === 'gain' ? 'scale-110 drop-shadow-sm' : 'opacity-70 grayscale-[30%]'">💪</div>
+                <div>
+                  <div class="font-bold text-base" :class="goal === 'gain' ? 'text-white' : 'text-secondary'">
+                    {{ t('onboarding.goalGainTitle') }}
+                  </div>
+                  <div class="text-xs opacity-80 mt-0.5" :class="goal === 'gain' ? 'text-white/90' : 'text-text-muted'">
+                    {{ t('onboarding.goalGainDesc') }}
+                  </div>
                 </div>
               </div>
             </Button>

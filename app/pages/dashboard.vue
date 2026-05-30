@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { onMounted, onUnmounted, computed, ref } from 'vue'
 import { AlertCircle, BrainCircuit, ArrowRight, FileText } from '@lucide/vue'
 import FoodScannerModal from '~/components/widgets/FoodScannerModal.vue'

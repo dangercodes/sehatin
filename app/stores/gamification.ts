@@ -181,6 +181,25 @@ export const useGamificationStore = defineStore('gamification', {
       }
     },
 
+    syncTargets(healthStore: any) {
+      let updated = false
+      const hydrationAch = this.achievements.find(a => a.id === 'hydration')
+      if (hydrationAch && hydrationAch.target !== healthStore.dailyGoalWater) {
+        hydrationAch.target = healthStore.dailyGoalWater
+        updated = true
+      }
+      
+      const proteinAch = this.achievements.find(a => a.id === 'protein')
+      if (proteinAch && proteinAch.target !== healthStore.macros.protein.goal) {
+        proteinAch.target = healthStore.macros.protein.goal
+        updated = true
+      }
+
+      if (updated) {
+        this.saveToLocalStorage()
+      }
+    },
+
     /**
      * Reactively checks current health statistics and triggers badge unlock if thresholds met.
      */

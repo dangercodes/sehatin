@@ -31,9 +31,9 @@ export const useUserStore = defineStore('user', {
       }
     },
     async logout() {
-      const supabase = useSupabaseClient()
-      await supabase.auth.signOut()
-      navigateTo('/')
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+      await authStore.logout()
     },
     async fetchProfile() {
       if (typeof window !== 'undefined') {
@@ -43,6 +43,23 @@ export const useUserStore = defineStore('user', {
         }
       }
       
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+
+      if (authStore.isGuest) {
+        if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('sehatin_guest_profile')
+          if (saved) {
+            try {
+              const data = JSON.parse(saved)
+              this.profileName = data.name || 'Guest'
+              this.profileAvatar = data.avatar_url || ''
+            } catch (e) {}
+          }
+        }
+        return
+      }
+
       const supabase = useSupabaseClient()
       if (!this.user) return
 
@@ -53,7 +70,7 @@ export const useUserStore = defineStore('user', {
         .single()
 
       if (data && !error) {
-        this.profileName = data.name || ''
+        this.profileName = data.name || 'User'
         this.profileAvatar = data.avatar_url || ''
       }
     },
@@ -65,8 +82,41 @@ export const useUserStore = defineStore('user', {
       daily_goal_calories?: number
       daily_goal_water?: number
     }) {
+      const { useAuthStore } = await import('./auth')
+      const authStore = useAuthStore()
+      
+      const healthStore = useHealthStore()
+
+      if (authStore.isGuest) {
+        this.profileName = profileData.name
+        this.profileAvatar = profileData.avatar_url
+        
+        if (profileData.height !== undefined) healthStore.height = Number(profileData.height)
+        if (profileData.goal_weight !== undefined) healthStore.goalWeight = Number(profileData.goal_weight)
+        if (profileData.daily_goal_calories !== undefined) healthStore.dailyGoalCalories = Number(profileData.daily_goal_calories)
+        if (profileData.daily_goal_water !== undefined) healthStore.dailyGoalWater = Number(profileData.daily_goal_water)
+        
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('sehatin_guest_profile', JSON.stringify({
+            name: this.profileName,
+            avatar_url: this.profileAvatar,
+            height: healthStore.height,
+            goal_weight: healthStore.goalWeight,
+            daily_goal_calories: healthStore.dailyGoalCalories,
+            daily_goal_water: healthStore.dailyGoalWater
+          }))
+        }
+
+        const { useGamificationStore } = await import('./gamification')
+        useGamificationStore().syncTargets(healthStore)
+        
+        return { success: true }
+      }
+
+      const userId = await authStore.getUserId()
+      if (!userId || userId === 'guest-user') return { error: 'User not authenticated' }
+
       const supabase = useSupabaseClient()
-      if (!this.user) return { error: 'User not authenticated' }
 
       const { error } = await supabase
         .from('profiles')
@@ -78,19 +128,21 @@ export const useUserStore = defineStore('user', {
           daily_goal_calories: profileData.daily_goal_calories,
           daily_goal_water: profileData.daily_goal_water
         })
-        .eq('id', this.user.id)
+        .eq('id', userId)
 
       if (!error) {
         this.profileName = profileData.name
         this.profileAvatar = profileData.avatar_url
         
         // Sync locally with health store
-        const healthStore = useHealthStore()
         if (profileData.height !== undefined) healthStore.height = Number(profileData.height)
         if (profileData.goal_weight !== undefined) healthStore.goalWeight = Number(profileData.goal_weight)
         if (profileData.daily_goal_calories !== undefined) healthStore.dailyGoalCalories = Number(profileData.daily_goal_calories)
         if (profileData.daily_goal_water !== undefined) healthStore.dailyGoalWater = Number(profileData.daily_goal_water)
         
+        const { useGamificationStore } = await import('./gamification')
+        useGamificationStore().syncTargets(healthStore)
+
         return { success: true }
       }
       return { error }
